@@ -1,3 +1,4 @@
+// backend/src/utils/pdfGenerator.js
 import PDFDocument from "pdfkit";
 
 export function generatePDF(text) {

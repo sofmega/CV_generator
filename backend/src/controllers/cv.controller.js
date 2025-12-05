@@ -1,21 +1,33 @@
 // backend/src/controllers/cv.controller.js
-import { extractCVText, uploadCVToSupabase } from "../services/cvExtract.service.js";
+import { generateCVText } from "../services/cv/cvText.service.js";
+import { generateCVPdf } from "../services/cv/cvPdf.service.js";
+import { saveApplication } from "../services/application.service.js";
 
-export const extractCVController = async (req, res) => {
+export const generateCVTextController = async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    const { jobDescription, cvText } = req.body;
+    const result = await generateCVText(jobDescription, cvText);
 
-    const file = req.file;
+    await saveApplication({ jobDescription, cvText, type: "cv-text", generatedText: result });
 
-    // Upload to Supabase Storage
-    await uploadCVToSupabase(file);
-
-    // Extract text
-    const text = await extractCVText(file);
-
-    return res.json({ text });
+    return res.json({ result });
   } catch (err) {
-    console.error("CV extract error:", err);
-    return res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: "CV text generation failed" });
+  }
+};
+
+export const generateCVPdfController = async (req, res) => {
+  try {
+    const { jobDescription, cvText } = req.body;
+    const pdfBuffer = await generateCVPdf(jobDescription, cvText);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'attachment; filename="CV.pdf"');
+
+    return res.send(pdfBuffer);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "CV PDF generation failed" });
   }
 };

@@ -1,8 +1,8 @@
-// backend/src/services/cvExtract.service.js
+// backend/src/services/extract/cvExtract.service.js
 import mammoth from "mammoth";
 import path from "path";
 import pdfParse from "pdf-parse";
-import { supabase } from "../config/supabase.js";
+import { supabase } from "../../config/supabase.js";
 
 export async function uploadCVToSupabase(file) {
   const filePath = `uploads/${Date.now()}-${file.originalname}`;
@@ -14,24 +14,21 @@ export async function uploadCVToSupabase(file) {
       upsert: false,
     });
 
-  if (error) throw new Error("Error uploading file to Supabase Storage");
+  if (error) {
+    throw new Error("Error uploading file to Supabase Storage");
+  }
 }
 
 export async function extractCVText(file) {
   const ext = path.extname(file.originalname).toLowerCase();
 
-  // TXT
-  if (ext === ".txt") {
-    return file.buffer.toString("utf8");
-  }
+  if (ext === ".txt") return file.buffer.toString("utf8");
 
-  // PDF
   if (ext === ".pdf") {
     const data = await pdfParse(file.buffer);
     return data.text;
   }
 
-  // DOCX
   if (ext === ".docx") {
     const { value } = await mammoth.extractRawText({ buffer: file.buffer });
     return value;
