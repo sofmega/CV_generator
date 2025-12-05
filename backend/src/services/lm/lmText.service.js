@@ -1,6 +1,6 @@
 // backend/src/services/lm/lmText.service.js
 import { createLMPrompt } from "./lmPrompt.service.js";
-import { client } from "../openai/openaiClient.js";
+import client from "../openai/openaiClient.js";
 
 export async function generateLMText(jobDescription, cvText) {
   const prompt = createLMPrompt(jobDescription, cvText);

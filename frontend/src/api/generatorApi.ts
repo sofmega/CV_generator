@@ -13,15 +13,9 @@ export async function extractCvText(file: File): Promise<string> {
     body: formData,
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to extract text from CV.");
-  }
+  if (!res.ok) throw new Error("Failed to extract text from CV.");
 
   const data = await res.json();
-  if (!data.text) {
-    throw new Error("CV extraction returned no text.");
-  }
-
   return data.text as string;
 }
 
@@ -41,41 +35,36 @@ export async function generateDocument(
 ): Promise<GenerateDocumentResult> {
   const { jobOffer, cvText, type } = params;
 
-  // Map frontend type → backend API type
-  const mappedType =
-    type === "coverLetter"
-      ? "cover-letter-pdf"
-      : type === "cv-pdf"
-      ? "cv-pdf"
-      : "cv";
+  // Map frontend type → backend endpoint
+  let endpoint = "";
+  let isPdf = false;
 
-  const res = await fetch(`${API_BASE_URL}/generate`, {
+  if (type === "cv") {
+    endpoint = "/cv/text";
+  } else if (type === "cv-pdf") {
+    endpoint = "/cv/pdf";
+    isPdf = true;
+  } else if (type === "coverLetter") {
+    endpoint = "/lm/pdf";
+    isPdf = true;
+  }
+
+  const res = await fetch(`${API_BASE_URL}${endpoint}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       jobDescription: jobOffer,
       cvText,
-      type: mappedType,
     }),
   });
 
-  if (!res.ok) {
-    throw new Error("Server error while generating.");
-  }
+  if (!res.ok) throw new Error("Server error while generating.");
 
-  // PDF flow (cover letter or CV)
-  if (mappedType === "cover-letter-pdf" || mappedType === "cv-pdf") {
+  if (isPdf) {
     const pdfBlob = await res.blob();
     return { pdfBlob };
   }
 
-  // Text flow (CV)
   const data: GenerateResponse = await res.json();
-  const result = data.content || data.result;
-
-  if (!result) {
-    throw new Error("No generated content received.");
-  }
-
-  return { text: result };
+  return { text: data.result };
 }

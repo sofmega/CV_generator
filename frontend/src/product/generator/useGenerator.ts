@@ -49,22 +49,20 @@ export function useGenerator() {
         type,
       });
 
-      // PDF download (CV or LM)
+      // PDF handling
       if (result.pdfBlob) {
         const url = URL.createObjectURL(result.pdfBlob);
         const a = document.createElement("a");
         a.href = url;
 
-        a.download =
-          type === "cv-pdf" ? "CV.pdf" : "Cover_Letter.pdf";
-
+        a.download = type === "cv-pdf" ? "CV.pdf" : "Cover_Letter.pdf";
         a.click();
-        URL.revokeObjectURL(url);
 
+        URL.revokeObjectURL(url);
         return;
       }
 
-      // Text CV (classic)
+      // Text handling (CV only)
       if (result.text) {
         setGeneratedText(result.text);
       }
@@ -79,7 +77,7 @@ export function useGenerator() {
     if (!generatedText) return;
 
     const blob = new Blob([generatedText], { type: "text/plain" });
-    const url = window.URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
     a.href = url;
