@@ -1,4 +1,4 @@
-// frontend/src/product/generator/useGenerator.ts
+// src/features/generator/useGenerator.ts
 import { useState } from "react";
 import type { ChangeEvent } from "react";
 import { extractCvText, generateDocument } from "../../api/generatorApi";
@@ -49,18 +49,22 @@ export function useGenerator() {
         type,
       });
 
-      // PDF flow (cover letter)
+      // PDF download (CV or LM)
       if (result.pdfBlob) {
         const url = URL.createObjectURL(result.pdfBlob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "Cover_Letter.pdf";
+
+        a.download =
+          type === "cv-pdf" ? "CV.pdf" : "Cover_Letter.pdf";
+
         a.click();
         URL.revokeObjectURL(url);
+
         return;
       }
 
-      // Text flow (CV)
+      // Text CV (classic)
       if (result.text) {
         setGeneratedText(result.text);
       }
@@ -82,11 +86,10 @@ export function useGenerator() {
     a.download = "cv.txt";
     a.click();
 
-    window.URL.revokeObjectURL(url);
+    URL.revokeObjectURL(url);
   };
 
   return {
-    // state
     jobOffer,
     cvText,
     generatedText,
@@ -94,10 +97,8 @@ export function useGenerator() {
     error,
     lastType,
 
-    // setters
     setJobOffer,
 
-    // actions
     handleCVUpload,
     handleGenerate,
     handleDownload,

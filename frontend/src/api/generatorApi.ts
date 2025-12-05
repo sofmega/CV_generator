@@ -28,7 +28,7 @@ export async function extractCvText(file: File): Promise<string> {
 export interface GenerateDocumentParams {
   jobOffer: string;
   cvText: string;
-  type: GenerateType;
+  type: GenerateType; // "cv" | "cv-pdf" | "coverLetter"
 }
 
 export interface GenerateDocumentResult {
@@ -41,13 +41,21 @@ export async function generateDocument(
 ): Promise<GenerateDocumentResult> {
   const { jobOffer, cvText, type } = params;
 
+  // Map frontend type → backend API type
+  const mappedType =
+    type === "coverLetter"
+      ? "cover-letter-pdf"
+      : type === "cv-pdf"
+      ? "cv-pdf"
+      : "cv";
+
   const res = await fetch(`${API_BASE_URL}/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       jobDescription: jobOffer,
       cvText,
-      type: type === "coverLetter" ? "cover-letter-pdf" : "cv",
+      type: mappedType,
     }),
   });
 
@@ -55,13 +63,13 @@ export async function generateDocument(
     throw new Error("Server error while generating.");
   }
 
-  // Cover letter → PDF
-  if (type === "coverLetter") {
+  // PDF flow (cover letter or CV)
+  if (mappedType === "cover-letter-pdf" || mappedType === "cv-pdf") {
     const pdfBlob = await res.blob();
     return { pdfBlob };
   }
 
-  // CV → text (JSON)
+  // Text flow (CV)
   const data: GenerateResponse = await res.json();
   const result = data.content || data.result;
 

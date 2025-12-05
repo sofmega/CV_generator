@@ -7,31 +7,36 @@ export const generateController = async (req, res) => {
   try {
     const { jobDescription, cvText, type } = req.body;
 
-    if (!jobDescription || !type)
+    if (!jobDescription || !type) {
       return res.status(400).json({ error: "jobDescription and type are required" });
+    }
 
-    // Generate text using AI
+    // 1. Generate text (CV or LM)
     const generatedText = await generateText({ jobDescription, cvText, type });
 
-    // Save in DB
-    await saveApplication({ jobDescription, cvText, type, generatedText });
+    // 2. Save to DB (optional)
+    await saveApplication({
+      jobDescription,
+      cvText,
+      type,
+      generatedText,
+    });
 
-    // ---- PDF FLOW ----
-    if (type === "cover-letter-pdf") {
+    // 3. If PDF is requested → return PDF
+    if (type === "cover-letter-pdf" || type === "cv-pdf") {
       const pdfBuffer = await generatePDF(generatedText);
 
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
         "Content-Disposition",
-        `attachment; filename="Cover_Letter.pdf"`
+        `attachment; filename="${type === "cv-pdf" ? "CV.pdf" : "Cover_Letter.pdf"}"`
       );
 
       return res.send(pdfBuffer);
     }
 
-    // ---- DEFAULT JSON (CV text) ----
+    // 4. Default: return text
     return res.json({ result: generatedText });
-
   } catch (err) {
     console.error("Generate error:", err);
     return res.status(500).json({ error: err.message });

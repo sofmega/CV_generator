@@ -50,16 +50,32 @@ export function GeneratePage() {
         <p className="info-banner">✔ CV scanned successfully</p>
       )}
 
-      {/* Buttons */}
+      {/* Action Buttons */}
       <div className="button-row">
+
+        {/* Generate CV (Text) */}
         <button
           className={`btn btn-primary ${isLoading ? "btn-disabled" : ""}`}
           onClick={() => onGenerateClick("cv")}
           disabled={isLoading}
         >
-          {isLoading && lastType === "cv" ? "Generating CV..." : "Generate CV"}
+          {isLoading && lastType === "cv"
+            ? "Generating CV..."
+            : "Generate CV (text)"}
         </button>
 
+        {/* Generate CV (PDF) */}
+        <button
+          className={`btn btn-primary ${isLoading ? "btn-disabled" : ""}`}
+          onClick={() => onGenerateClick("cv-pdf")}
+          disabled={isLoading}
+        >
+          {isLoading && lastType === "cv-pdf"
+            ? "Generating CV PDF..."
+            : "Generate CV (PDF)"}
+        </button>
+
+        {/* Generate Cover Letter (PDF) */}
         <button
           className={`btn btn-primary ${isLoading ? "btn-disabled" : ""}`}
           onClick={() => onGenerateClick("coverLetter")}
@@ -67,9 +83,10 @@ export function GeneratePage() {
         >
           {isLoading && lastType === "coverLetter"
             ? "Generating LM..."
-            : "Generate Cover Letter"}
+            : "Generate Cover Letter (PDF)"}
         </button>
 
+        {/* Download plain text CV */}
         <button
           className={`btn ${
             lastType === "coverLetter" || !generatedText
@@ -79,11 +96,11 @@ export function GeneratePage() {
           onClick={handleDownload}
           disabled={!generatedText || lastType === "coverLetter"}
         >
-          Download Result
+          Download CV (text)
         </button>
       </div>
 
-      {/* Error */}
+      {/* Error Message */}
       {error && <p className="error-text">{error}</p>}
     </div>
   );
