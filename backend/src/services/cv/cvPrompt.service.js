@@ -40,3 +40,5 @@ ${safeCv}
 Now rewrite an improved CV following the rules above.
   `;
 }
+
+

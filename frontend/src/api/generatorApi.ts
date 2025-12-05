@@ -1,4 +1,4 @@
-// src/api/generatorApi.ts
+// frontend/src/api/generatorApi.ts
 import type { GenerateType, GenerateResponse } from "../features/generator/types";
 
 const API_BASE_URL =
@@ -13,9 +13,15 @@ export async function extractCvText(file: File): Promise<string> {
     body: formData,
   });
 
-  if (!res.ok) throw new Error("Failed to extract text from CV.");
+  if (!res.ok) {
+    throw new Error("Failed to extract text from CV.");
+  }
 
   const data = await res.json();
+  if (!data.text) {
+    throw new Error("CV extraction returned no text.");
+  }
+
   return data.text as string;
 }
 
@@ -35,36 +41,66 @@ export async function generateDocument(
 ): Promise<GenerateDocumentResult> {
   const { jobOffer, cvText, type } = params;
 
-  // Map frontend type → backend endpoint
-  let endpoint = "";
-  let isPdf = false;
-
+  // === CV TEXT ===
   if (type === "cv") {
-    endpoint = "/cv/text";
-  } else if (type === "cv-pdf") {
-    endpoint = "/cv/pdf";
-    isPdf = true;
-  } else if (type === "coverLetter") {
-    endpoint = "/lm/pdf";
-    isPdf = true;
+    const res = await fetch(`${API_BASE_URL}/cv/text`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jobDescription: jobOffer,
+        cvText,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Server error while generating CV text.");
+    }
+
+    const data: GenerateResponse = await res.json();
+    const result = data.content || data.result;
+
+    if (!result) {
+      throw new Error("No generated CV content received.");
+    }
+
+    return { text: result };
   }
 
-  const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+  // === CV PDF ===
+  if (type === "cv-pdf") {
+    const res = await fetch(`${API_BASE_URL}/cv/pdf`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jobDescription: jobOffer,
+        cvText,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Server error while generating CV PDF.");
+    }
+
+    const pdfBlob = await res.blob();
+    return { pdfBlob };
+  }
+
+  // === COVER LETTER (PDF) – still uses /generate ===
+  // Map to the backend type
+  const res = await fetch(`${API_BASE_URL}/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       jobDescription: jobOffer,
       cvText,
+      type: "cover-letter-pdf",
     }),
   });
 
-  if (!res.ok) throw new Error("Server error while generating.");
-
-  if (isPdf) {
-    const pdfBlob = await res.blob();
-    return { pdfBlob };
+  if (!res.ok) {
+    throw new Error("Server error while generating cover letter.");
   }
 
-  const data: GenerateResponse = await res.json();
-  return { text: data.result };
+  const pdfBlob = await res.blob();
+  return { pdfBlob };
 }

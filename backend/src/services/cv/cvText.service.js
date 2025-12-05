@@ -12,3 +12,4 @@ export async function generateCVText(jobDescription, cvText) {
 
   return response.output[0].content[0].text.trim();
 }
+
