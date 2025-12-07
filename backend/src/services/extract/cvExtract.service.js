@@ -1,7 +1,12 @@
 // backend/src/services/extract/cvExtract.service.js
 import mammoth from "mammoth";
 import path from "path";
-import pdfParse from "pdf-parse";
+
+// ✅ FIX: import pdf-parse using CommonJS to avoid startup crash
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const pdfParse = require("pdf-parse");
+
 import { supabase } from "../../config/supabase.js";
 
 export async function uploadCVToSupabase(file) {
@@ -22,9 +27,12 @@ export async function uploadCVToSupabase(file) {
 export async function extractCVText(file) {
   const ext = path.extname(file.originalname).toLowerCase();
 
-  if (ext === ".txt") return file.buffer.toString("utf8");
+  if (ext === ".txt") {
+    return file.buffer.toString("utf8");
+  }
 
   if (ext === ".pdf") {
+    // pdf-parse works normally once imported with CommonJS
     const data = await pdfParse(file.buffer);
     return data.text;
   }

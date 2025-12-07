@@ -6,7 +6,7 @@ const API_BASE_URL =
 
 export async function extractCvText(file: File): Promise<string> {
   const formData = new FormData();
-  formData.append("cv", file);
+  formData.append("cv", file); // MUST match multer.single("cv")
 
   const res = await fetch(`${API_BASE_URL}/extract-cv`, {
     method: "POST",
@@ -85,22 +85,24 @@ export async function generateDocument(
     return { pdfBlob };
   }
 
-  // === COVER LETTER (PDF) – still uses /generate ===
-  // Map to the backend type
-  const res = await fetch(`${API_BASE_URL}/generate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      jobDescription: jobOffer,
-      cvText,
-      type: "cover-letter-pdf",
-    }),
-  });
+  // === COVER LETTER (PDF) – updated to match backend ===
+  if (type === "coverLetter") {
+    const res = await fetch(`${API_BASE_URL}/lm/pdf`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jobDescription: jobOffer,
+        cvText,
+      }),
+    });
 
-  if (!res.ok) {
-    throw new Error("Server error while generating cover letter.");
+    if (!res.ok) {
+      throw new Error("Server error while generating cover letter PDF.");
+    }
+
+    const pdfBlob = await res.blob();
+    return { pdfBlob };
   }
 
-  const pdfBlob = await res.blob();
-  return { pdfBlob };
+  throw new Error("Unknown generation type.");
 }
