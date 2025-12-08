@@ -1,5 +1,6 @@
 // backend/src/routes/cv.routes.js
 import { Router } from "express";
+import { authMiddleware } from "../middleware/auth.js";
 import {
   generateCVTextController,
   generateCVPdfController,
@@ -7,7 +8,8 @@ import {
 
 const router = Router();
 
-router.post("/text", generateCVTextController);
-router.post("/pdf", generateCVPdfController);
+// 🔒 Protect routes
+router.post("/text", authMiddleware, generateCVTextController);
+router.post("/pdf", authMiddleware, generateCVPdfController);
 
 export default router;

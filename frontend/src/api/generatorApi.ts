@@ -1,14 +1,15 @@
 // frontend/src/api/generatorApi.ts
-import type { GenerateType, GenerateResponse } from "../product/generator/types";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
+import type { GenerateType } from "../product/generator/types";
+import { API_BASE_URL, getAuthHeaders, getJWT } from "../lib/api";
 
 export async function extractCvText(file: File): Promise<string> {
   const formData = new FormData();
   formData.append("cv", file); // MUST match multer.single("cv")
 
-  const res = await fetch(`${API_BASE_URL}/extract-cv`, {
+  // We CANNOT attach Authorization header with FormData
+  const token = await getJWT();
+
+  const res = await fetch(`${API_BASE_URL}/extract-cv?token=${token}`, {
     method: "POST",
     body: formData,
   });
@@ -41,27 +42,24 @@ export async function generateDocument(
 ): Promise<GenerateDocumentResult> {
   const { jobOffer, cvText, type } = params;
 
+  const authHeaders = await getAuthHeaders();
+
   // === CV TEXT ===
   if (type === "cv") {
     const res = await fetch(`${API_BASE_URL}/cv/text`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jobDescription: jobOffer,
-        cvText,
-      }),
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders,
+      },
+      body: JSON.stringify({ jobDescription: jobOffer, cvText }),
     });
 
-    if (!res.ok) {
-      throw new Error("Server error while generating CV text.");
-    }
+    if (!res.ok) throw new Error("Server error while generating CV text.");
 
-    const data: GenerateResponse = await res.json();
+    const data = await res.json();
     const result = data.content || data.result;
-
-    if (!result) {
-      throw new Error("No generated CV content received.");
-    }
+    if (!result) throw new Error("No generated CV content received.");
 
     return { text: result };
   }
@@ -70,38 +68,33 @@ export async function generateDocument(
   if (type === "cv-pdf") {
     const res = await fetch(`${API_BASE_URL}/cv/pdf`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jobDescription: jobOffer,
-        cvText,
-      }),
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders,
+      },
+      body: JSON.stringify({ jobDescription: jobOffer, cvText }),
     });
 
-    if (!res.ok) {
-      throw new Error("Server error while generating CV PDF.");
-    }
+    if (!res.ok) throw new Error("Server error while generating CV PDF.");
 
-    const pdfBlob = await res.blob();
-    return { pdfBlob };
+    return { pdfBlob: await res.blob() };
   }
 
-  // === COVER LETTER (PDF) – updated to match backend ===
+  // === COVER LETTER PDF ===
   if (type === "coverLetter") {
     const res = await fetch(`${API_BASE_URL}/lm/pdf`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jobDescription: jobOffer,
-        cvText,
-      }),
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders,
+      },
+      body: JSON.stringify({ jobDescription: jobOffer, cvText }),
     });
 
-    if (!res.ok) {
+    if (!res.ok)
       throw new Error("Server error while generating cover letter PDF.");
-    }
 
-    const pdfBlob = await res.blob();
-    return { pdfBlob };
+    return { pdfBlob: await res.blob() };
   }
 
   throw new Error("Unknown generation type.");
