@@ -1,8 +1,8 @@
 // src/features/generator/useGenerator.ts
 import { useState } from "react";
 import type { ChangeEvent } from "react";
-import { extractCvText, generateDocument } from "../../api/generatorApi";
-import type { GenerateType } from "./types";
+import { extractCvText, generateDocument } from "../api/generatorApi";
+import type { GenerateType } from "../product/generator/types";
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;

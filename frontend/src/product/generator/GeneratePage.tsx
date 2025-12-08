@@ -1,7 +1,9 @@
-// frontend/src/product/generator/GeneratePage.tsx
-import { useGenerator } from "./useGenerator";
+import { useGenerator } from "../../hooks/useGenerator";
 import type { GenerateType } from "./types";
-import "../../styles/generator.css";
+
+import Card from "../../components/ui/Card";
+import Textarea from "../../components/ui/Textarea";
+import Button from "../../components/ui/Button";
 
 export function GeneratePage() {
   const {
@@ -22,86 +24,85 @@ export function GeneratePage() {
   };
 
   return (
-    <div className="page-container">
-      <h1 className="page-title">AI Job Application Assistant</h1>
+    <div className="min-h-screen bg-gray-100 flex justify-center px-4 py-10">
+      <Card className="w-full max-w-3xl">
 
-      {/* Job Offer */}
-      <div className="field">
-        <label className="field-label">Job Offer</label>
-        <textarea
-          className="textarea"
-          placeholder="Paste job offer..."
-          value={jobOffer}
-          onChange={(e) => setJobOffer(e.target.value)}
-        />
-      </div>
+        <h1 className="text-3xl font-bold mb-2 text-gray-800">
+          AI Job Application Assistant
+        </h1>
 
-      {/* CV Upload */}
-      <div className="field">
-        <label className="field-label">Upload Your CV (PDF / DOCX / TXT)</label>
-        <input
-          type="file"
-          accept=".pdf,.doc,.docx,.txt"
-          onChange={handleCVUpload}
-        />
-      </div>
+        <p className="text-gray-600 mb-8">
+          Generate a tailored CV or cover letter instantly using AI.
+        </p>
 
-      {cvText && (
-        <p className="info-banner">✔ CV scanned successfully</p>
-      )}
+        {/* Job Offer */}
+        <div className="mb-6">
+          <Textarea
+            label="Job Offer"
+            placeholder="Paste the job offer..."
+            value={jobOffer}
+            onChange={(e) => setJobOffer(e.target.value)}
+            className="h-40"
+          />
+        </div>
 
-      {/* Action Buttons */}
-      <div className="button-row">
+        {/* CV Upload */}
+        <div className="mb-6">
+          <label className="block font-semibold mb-2 text-gray-700">
+            Upload Your CV (PDF / DOCX / TXT)
+          </label>
 
-        {/* Generate CV (Text) */}
-        <button
-          className={`btn btn-primary ${isLoading ? "btn-disabled" : ""}`}
-          onClick={() => onGenerateClick("cv")}
-          disabled={isLoading}
-        >
-          {isLoading && lastType === "cv"
-            ? "Generating CV..."
-            : "Generate CV (text)"}
-        </button>
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx,.txt"
+            onChange={handleCVUpload}
+            className="block cursor-pointer"
+          />
 
-        {/* Generate CV (PDF) */}
-        <button
-          className={`btn btn-primary ${isLoading ? "btn-disabled" : ""}`}
-          onClick={() => onGenerateClick("cv-pdf")}
-          disabled={isLoading}
-        >
-          {isLoading && lastType === "cv-pdf"
-            ? "Generating CV PDF..."
-            : "Generate CV (PDF)"}
-        </button>
+          {cvText && (
+            <p className="text-green-600 mt-2 font-medium">
+              ✔ CV scanned successfully
+            </p>
+          )}
+        </div>
 
-        {/* Generate Cover Letter (PDF) */}
-        <button
-          className={`btn btn-primary ${isLoading ? "btn-disabled" : ""}`}
-          onClick={() => onGenerateClick("coverLetter")}
-          disabled={isLoading}
-        >
-          {isLoading && lastType === "coverLetter"
-            ? "Generating LM..."
-            : "Generate Cover Letter (PDF)"}
-        </button>
+        {/* Buttons */}
+        <div className="flex flex-wrap gap-3 mb-6">
+          <Button
+            variant="primary"
+            onClick={() => onGenerateClick("cv")}
+            loading={isLoading && lastType === "cv"}
+          >
+            Generate CV (Text)
+          </Button>
 
-        {/* Download plain text CV */}
-        <button
-          className={`btn ${
-            lastType === "coverLetter" || !generatedText
-              ? "btn-disabled"
-              : ""
-          }`}
-          onClick={handleDownload}
-          disabled={!generatedText || lastType === "coverLetter"}
-        >
-          Download CV (text)
-        </button>
-      </div>
+          <Button
+            variant="primary"
+            onClick={() => onGenerateClick("cv-pdf")}
+            loading={isLoading && lastType === "cv-pdf"}
+          >
+            Generate CV (PDF)
+          </Button>
 
-      {/* Error Message */}
-      {error && <p className="error-text">{error}</p>}
+          <Button
+            variant="primary"
+            onClick={() => onGenerateClick("coverLetter")}
+            loading={isLoading && lastType === "coverLetter"}
+          >
+            Generate Cover Letter (PDF)
+          </Button>
+
+          <Button
+            variant="secondary"
+            onClick={handleDownload}
+            disabled={!generatedText || lastType === "coverLetter"}
+          >
+            Download CV (Text)
+          </Button>
+        </div>
+
+        {error && <p className="text-red-600 font-medium">{error}</p>}
+      </Card>
     </div>
   );
 }

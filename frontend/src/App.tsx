@@ -1,82 +1,23 @@
 // frontend/src/App.tsx
-import { supabase } from "./lib/supabase";
-import { useEffect, useState } from "react";
-import AuthPage from "./auth/AuthPage";
-import { GeneratePage } from "./product/generator/GeneratePage";
-import type { Session } from "@supabase/supabase-js";
+import { Route, Routes } from "react-router-dom";
+import Header from "./components/layout/Header";
+
+import { GeneratePage } from "./product/generator/GeneratePage.tsx";
+import LoginPage from "./product/auth/LoginPage";
+import RegisterPage from "./product/auth/RegisterPage";
 
 export default function App() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [showAuth, setShowAuth] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-    });
-
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      }
-    );
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, []);
-
-  function handleLogout() {
-    supabase.auth.signOut();
-  }
-
   return (
-    <>
-      {/* HEADER */}
-      <div
-        style={{
-          width: "100%",
-          padding: "10px 20px",
-          display: "flex",
-          justifyContent: "flex-end",
-          borderBottom: "1px solid #ddd",
-        }}
-      >
-        {session ? (
-          <>
-            <span style={{ marginRight: 15 }}>
-              Logged in as <b>{session.user.email}</b>
-            </span>
-            <button onClick={handleLogout}>Logout</button>
-          </>
-        ) : (
-          <button onClick={() => setShowAuth(true)}>Login / Register</button>
-        )}
-      </div>
+    <div className="min-h-screen bg-gray-100">
+      <Header />
 
-      {/* AUTH MODAL */}
-      {showAuth && !session && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.4)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          onClick={() => setShowAuth(false)}
-        >
-          <div
-            style={{ background: "white", padding: 20 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <AuthPage />
-          </div>
-        </div>
-      )}
-
-      {/* ALWAYS PUBLIC GENERATOR PAGE */}
-      <GeneratePage />
-    </>
+      <main className="pt-10">
+        <Routes>
+          <Route path="/" element={<GeneratePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Routes>
+      </main>
+    </div>
   );
 }
