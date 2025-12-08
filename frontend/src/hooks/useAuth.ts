@@ -1,3 +1,4 @@
+// frontend/src/hooks/useAuth.ts
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +7,23 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // -----------------------
+  // Get current logged user
+  // -----------------------
+  async function getCurrentUser() {
+    const { data } = await supabase.auth.getUser();
+    return data.user || null;
+  }
+
+  // (Optional) Get session token
+  async function getSession() {
+    const { data } = await supabase.auth.getSession();
+    return data.session || null;
+  }
+
+  // -----------------------
+  // Register user
+  // -----------------------
   async function signUp(email: string, password: string) {
     setError(null);
 
@@ -24,6 +42,9 @@ export function useAuth() {
     return true;
   }
 
+  // -----------------------
+  // Login user
+  // -----------------------
   async function signIn(email: string, password: string) {
     setError(null);
 
@@ -41,6 +62,9 @@ export function useAuth() {
     return true;
   }
 
+  // -----------------------
+  // Google OAuth Login
+  // -----------------------
   async function signInWithGoogle() {
     setError(null);
 
@@ -55,14 +79,23 @@ export function useAuth() {
       setError(error.message);
       return;
     }
-
-    // User will be redirected automatically by Google → Supabase → /auth/callback
   }
 
+  // -----------------------
+  // Logout
+  // -----------------------
   async function signOut() {
     await supabase.auth.signOut();
     navigate("/login");
   }
 
-  return { signIn, signUp, signOut, signInWithGoogle, error };
+  return {
+    signIn,
+    signUp,
+    signOut,
+    signInWithGoogle,
+    getCurrentUser,
+    getSession,
+    error,
+  };
 }

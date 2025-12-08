@@ -1,3 +1,4 @@
+// frontend/src/components/layout/Header.tsx
 import { supabase } from "../../lib/supabase";
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
@@ -27,6 +28,9 @@ export default function Header() {
       <div>
         {!session ? (
           <div className="flex gap-4">
+            <a href="/pricing" className="text-gray-700 hover:underline mr-4">
+  Pricing
+</a>
             <Link
               to="/login"
               className="text-blue-600 hover:text-blue-800 font-medium transition"
