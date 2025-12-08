@@ -1,3 +1,4 @@
+// frontend/src/auth/useAuth.ts
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 
