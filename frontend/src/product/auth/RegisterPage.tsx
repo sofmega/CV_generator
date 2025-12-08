@@ -1,3 +1,4 @@
+// frontend/src/product/auth/RegisterPage.tsx
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import Input from "../../components/ui/Input";
@@ -9,6 +10,16 @@ export default function RegisterPage() {
   const { signUp, error } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [registered, setRegistered] = useState(false);
+
+  async function handleRegister() {
+    await signUp(email, password);
+
+    // ⭐ If no error and signup succeeded:
+    if (!error) {
+      setRegistered(true);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center px-4">
@@ -16,35 +27,54 @@ export default function RegisterPage() {
 
         <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
 
-        <div className="flex flex-col gap-4">
-          <Input
-            label="Email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        {registered ? (
+          <div className="text-center">
+            <p className="text-green-600 font-medium mb-4">
+              ✔ A confirmation email has been sent!
+            </p>
+            <p className="text-gray-600 mb-6">
+              Please check your inbox and verify your email before logging in.
+            </p>
 
-          <Input
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <Button onClick={() => signUp(email, password)}>
-            Register
-          </Button>
-
-          <p className="text-center text-gray-600">
-            Already have an account?{" "}
-            <Link className="text-blue-600" to="/login">
-              Login
+            <Link
+              to="/login"
+              className="text-blue-600 underline font-medium"
+            >
+              Go to Login
             </Link>
-          </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            <Input
+              label="Email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-          {error && <p className="text-red-600 mt-2">{error}</p>}
-        </div>
+            <Input
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <Button onClick={handleRegister}>
+              Register
+            </Button>
+
+            <p className="text-center text-gray-600">
+              Already have an account?{" "}
+              <Link className="text-blue-600" to="/login">
+                Login
+              </Link>
+            </p>
+
+            {error && <p className="text-red-600 mt-2">{error}</p>}
+          </div>
+        )}
+
       </Card>
     </div>
   );
