@@ -5,6 +5,7 @@ import Header from "./components/layout/Header";
 import { GeneratePage } from "./product/generator/GeneratePage.tsx";
 import LoginPage from "./product/auth/LoginPage";
 import RegisterPage from "./product/auth/RegisterPage";
+import AuthCallback from "./product/auth/AuthCallback";
 
 export default function App() {
   return (
@@ -16,6 +17,8 @@ export default function App() {
           <Route path="/" element={<GeneratePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+
         </Routes>
       </main>
     </div>

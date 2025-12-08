@@ -16,14 +16,11 @@ export function useAuth() {
       return;
     }
 
-    // ⭐ Show success message
     alert(
-      "A confirmation email has been sent to your inbox. Please verify your email to activate your account."
+      "A confirmation email has been sent to your inbox. Please verify your email before logging in."
     );
 
-    // ⭐ Redirect to login page
     navigate("/login");
-
     return true;
   }
 
@@ -40,10 +37,26 @@ export function useAuth() {
       return;
     }
 
-    // ⭐ Go to main product page
     navigate("/");
-
     return true;
+  }
+
+  async function signInWithGoogle() {
+    setError(null);
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    // User will be redirected automatically by Google → Supabase → /auth/callback
   }
 
   async function signOut() {
@@ -51,5 +64,5 @@ export function useAuth() {
     navigate("/login");
   }
 
-  return { signIn, signUp, signOut, error };
+  return { signIn, signUp, signOut, signInWithGoogle, error };
 }

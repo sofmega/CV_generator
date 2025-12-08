@@ -7,14 +7,13 @@ import Card from "../../components/ui/Card";
 import { Link } from "react-router-dom";
 
 export default function LoginPage() {
-  const { signIn, error } = useAuth();
+  const { signIn, signInWithGoogle, error } = useAuth(); // ⭐ FIXED: added signInWithGoogle
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center px-4">
       <Card className="w-full max-w-md">
-
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
         <div className="flex flex-col gap-4">
@@ -37,9 +36,16 @@ export default function LoginPage() {
             Login
           </Button>
 
+          <Button
+            variant="secondary"
+            onClick={signInWithGoogle}
+          >
+            Continue with Google
+          </Button>
+
           <p className="text-center text-gray-600">
             Don't have an account?{" "}
-            <Link className="text-blue-600" to="/register">
+            <Link className="text-blue-600 hover:underline" to="/register">
               Register
             </Link>
           </p>

@@ -7,7 +7,7 @@ import Card from "../../components/ui/Card";
 import { Link } from "react-router-dom";
 
 export default function RegisterPage() {
-  const { signUp, error } = useAuth();
+  const { signUp, signInWithGoogle, error } = useAuth(); // ⭐ added signInWithGoogle
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [registered, setRegistered] = useState(false);
@@ -24,7 +24,6 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center px-4">
       <Card className="w-full max-w-md">
-
         <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
 
         {registered ? (
@@ -64,6 +63,13 @@ export default function RegisterPage() {
               Register
             </Button>
 
+            <Button
+              variant="secondary"
+              onClick={signInWithGoogle}
+            >
+              Continue with Google
+            </Button>
+
             <p className="text-center text-gray-600">
               Already have an account?{" "}
               <Link className="text-blue-600" to="/login">
@@ -74,7 +80,6 @@ export default function RegisterPage() {
             {error && <p className="text-red-600 mt-2">{error}</p>}
           </div>
         )}
-
       </Card>
     </div>
   );
