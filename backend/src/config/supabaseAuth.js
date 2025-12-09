@@ -1,5 +1,8 @@
 // backend/src/config/supabaseAuth.js
 import { createClient } from "@supabase/supabase-js";
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./env.js";
+import { env } from "./env.js"; 
 
-export const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const supabaseAuth = createClient(
+  env.SUPABASE_URL,
+  env.SUPABASE_ANON_KEY
+);

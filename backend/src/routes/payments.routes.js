@@ -1,12 +1,18 @@
 // backend/src/routes/payments.routes.js
 import express from "express";
 import Stripe from "stripe";
+
 import { supabase } from "../config/supabase.js";
+import { env } from "../config/env.js"; 
 
 const router = express.Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Create checkout session
+// Stripe client with validated API key
+const stripe = new Stripe(env.STRIPE_SECRET_KEY);
+
+// -----------------------------------------------------------------------------
+// Create Checkout Session
+// -----------------------------------------------------------------------------
 router.post("/create-checkout-session", async (req, res) => {
   try {
     const { priceId, userId, email } = req.body;
@@ -22,10 +28,10 @@ router.post("/create-checkout-session", async (req, res) => {
 
       line_items: [{ price: priceId, quantity: 1 }],
 
-      success_url: `${process.env.FRONTEND_URL}/payment-success`,
-      cancel_url: `${process.env.FRONTEND_URL}/pricing`,
+      success_url: `${env.FRONTEND_URL}/payment-success`,
+      cancel_url: `${env.FRONTEND_URL}/pricing`,
 
-      // we store both userId + priceId, used later in webhook
+      // Metadata stored → webhook uses it
       metadata: { userId, priceId },
     });
 
@@ -36,20 +42,19 @@ router.post("/create-checkout-session", async (req, res) => {
   }
 });
 
-/**
- * Stripe webhook for subscription events
- * NOTE: express.raw middleware is now in app.js:
- * app.use("/payments/webhook", express.raw({ type: "application/json" }));
- */
+// -----------------------------------------------------------------------------
+// Stripe Webhook (raw body required → configured in app.js)
+// -----------------------------------------------------------------------------
 router.post("/webhook", async (req, res) => {
-  const sig = req.headers["stripe-signature"];
+  const signature = req.headers["stripe-signature"];
 
   let event;
+
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
+      signature,
+      env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
     console.error("Webhook Signature Error:", err.message);
@@ -60,6 +65,7 @@ router.post("/webhook", async (req, res) => {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
+
         const userId = session.metadata.userId;
         const priceId = session.metadata.priceId;
 
@@ -90,7 +96,7 @@ router.post("/webhook", async (req, res) => {
       }
 
       default:
-        // For other events we don't care, just acknowledge
+        // Ignore other events but acknowledge reception
         break;
     }
   } catch (err) {
