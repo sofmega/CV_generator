@@ -6,11 +6,15 @@ export async function extractCvText(file: File): Promise<string> {
   const formData = new FormData();
   formData.append("cv", file); // MUST match multer.single("cv")
 
-  // We CANNOT attach Authorization header with FormData
+  // Get user JWT
   const token = await getJWT();
 
-  const res = await fetch(`${API_BASE_URL}/extract-cv?token=${token}`, {
+  // Send FormData + Authorization header
+  const res = await fetch(`${API_BASE_URL}/extract-cv`, {
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`, // ⭐ FIXED
+    },
     body: formData,
   });
 
@@ -26,6 +30,9 @@ export async function extractCvText(file: File): Promise<string> {
   return data.text as string;
 }
 
+// -------------------------------------------------
+// Types
+// -------------------------------------------------
 export interface GenerateDocumentParams {
   jobOffer: string;
   cvText: string;
@@ -37,6 +44,9 @@ export interface GenerateDocumentResult {
   pdfBlob?: Blob;
 }
 
+// -------------------------------------------------
+// Generate Document Functions (unchanged)
+// -------------------------------------------------
 export async function generateDocument(
   params: GenerateDocumentParams
 ): Promise<GenerateDocumentResult> {
