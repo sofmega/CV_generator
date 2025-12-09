@@ -12,7 +12,7 @@ export default function PricingPage() {
 
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
-  // Your Stripe real price IDs
+  // REAL Stripe price IDs
   const PLANS = [
     {
       name: "Starter",
@@ -29,9 +29,10 @@ export default function PricingPage() {
   ];
 
   async function subscribe(priceId: string) {
-    // ⭐ FIX — getCurrentUser MUST be awaited
+    // ⭐ MUST await the async function
     const user = await getCurrentUser();
 
+    // If user is not logged in → redirect
     if (!user) {
       navigate("/login");
       return;
@@ -47,8 +48,8 @@ export default function PricingPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             priceId,
-            userId: user.id,   // now works
-            email: user.email, // now works
+            userId: user.id,   // ⭐ Safe
+            email: user.email, // ⭐ Safe
           }),
         }
       );
@@ -56,7 +57,8 @@ export default function PricingPage() {
       const data = await res.json();
 
       if (data.url) {
-        window.location.href = data.url; // Stripe redirect
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
       } else {
         alert("Stripe error: No checkout URL returned.");
       }
