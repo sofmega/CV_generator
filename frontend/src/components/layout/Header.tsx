@@ -25,12 +25,18 @@ export default function Header() {
         <Link to="/">CVPRO AI</Link>
       </div>
 
-      <div>
+      <div className="flex items-center gap-6">
+        {/* Pricing is always visible */}
+        <Link
+          to="/pricing"
+          className="text-gray-700 hover:underline"
+        >
+          Pricing
+        </Link>
+
+        {/* Auth actions depend on session */}
         {!session ? (
-          <div className="flex gap-4">
-            <a href="/pricing" className="text-gray-700 hover:underline mr-4">
-  Pricing
-</a>
+          <>
             <Link
               to="/login"
               className="text-blue-600 hover:text-blue-800 font-medium transition"
@@ -44,9 +50,9 @@ export default function Header() {
             >
               Register
             </Link>
-          </div>
+          </>
         ) : (
-          <div className="flex items-center gap-4">
+          <>
             <span className="text-gray-700">{session.user.email}</span>
 
             <NavbarButton
@@ -55,7 +61,7 @@ export default function Header() {
             >
               Logout
             </NavbarButton>
-          </div>
+          </>
         )}
       </div>
     </header>
