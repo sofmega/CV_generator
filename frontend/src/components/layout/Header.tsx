@@ -1,23 +1,11 @@
 // frontend/src/components/layout/Header.tsx
-import { supabase } from "../../lib/supabase";
-import { useEffect, useState } from "react";
-import type { Session } from "@supabase/supabase-js";
-
-import NavbarButton from "../ui/NavbarButton";
 import { Link } from "react-router-dom";
+import NavbarButton from "../ui/NavbarButton";
+import { useAuthContext } from "../../hooks/useAuthContext";
+import { supabase } from "../../lib/supabase";
 
 export default function Header() {
-  const [session, setSession] = useState<Session | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => setSession(session)
-    );
-
-    return () => listener.subscription.unsubscribe();
-  }, []);
+  const { user } = useAuthContext();
 
   return (
     <header className="w-full bg-white border-b h-16 flex items-center justify-between px-6 shadow-sm">
@@ -26,16 +14,11 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-6">
-        {/* Pricing is always visible */}
-        <Link
-          to="/pricing"
-          className="text-gray-700 hover:underline"
-        >
+        <Link to="/pricing" className="text-gray-700 hover:underline">
           Pricing
         </Link>
 
-        {/* Auth actions depend on session */}
-        {!session ? (
+        {!user ? (
           <>
             <Link
               to="/login"
@@ -53,7 +36,7 @@ export default function Header() {
           </>
         ) : (
           <>
-            <span className="text-gray-700">{session.user.email}</span>
+            <span className="text-gray-700">{user.email}</span>
 
             <NavbarButton
               className="text-red-500"

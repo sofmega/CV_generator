@@ -7,16 +7,15 @@ import Card from "../../components/ui/Card";
 import { Link } from "react-router-dom";
 
 export default function RegisterPage() {
-  const { signUp, signInWithGoogle, error } = useAuth(); // ⭐ added signInWithGoogle
+  const { signUp, signInWithGoogle, error } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [registered, setRegistered] = useState(false);
 
   async function handleRegister() {
-    await signUp(email, password);
+    const success = await signUp(email, password);
 
-    // ⭐ If no error and signup succeeded:
-    if (!error) {
+    if (success) {
       setRegistered(true);
     }
   }

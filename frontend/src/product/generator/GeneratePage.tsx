@@ -1,3 +1,4 @@
+// frontend/src/product/generator/GeneratePage.tsx
 import { useGenerator } from "../../hooks/useGenerator";
 import type { GenerateType } from "./types";
 

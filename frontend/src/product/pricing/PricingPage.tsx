@@ -1,5 +1,4 @@
 // frontend/src/product/pricing/PricingPage.tsx
-
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import { useAuth } from "../../hooks/useAuth";
@@ -7,12 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function PricingPage() {
-  const { getCurrentUser } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
-  // REAL Stripe price IDs
   const PLANS = [
     {
       name: "Starter",
@@ -29,10 +26,6 @@ export default function PricingPage() {
   ];
 
   async function subscribe(priceId: string) {
-    // ⭐ MUST await the async function
-    const user = await getCurrentUser();
-
-    // If user is not logged in → redirect
     if (!user) {
       navigate("/login");
       return;
@@ -48,8 +41,8 @@ export default function PricingPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             priceId,
-            userId: user.id,   // ⭐ Safe
-            email: user.email, // ⭐ Safe
+            userId: user.id,
+            email: user.email,
           }),
         }
       );
@@ -57,7 +50,6 @@ export default function PricingPage() {
       const data = await res.json();
 
       if (data.url) {
-        // Redirect to Stripe Checkout
         window.location.href = data.url;
       } else {
         alert("Stripe error: No checkout URL returned.");
