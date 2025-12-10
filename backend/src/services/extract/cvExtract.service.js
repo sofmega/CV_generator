@@ -1,18 +1,24 @@
 // backend/src/services/extract/cvExtract.service.js
 import mammoth from "mammoth";
 import path from "path";
+import crypto from "crypto";
 
-// ✅ FIX: import pdf-parse using CommonJS to avoid startup crash
+// FIX: load pdf-parse using CommonJS
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const pdfParse = require("pdf-parse");
 
 import { supabase } from "../../config/supabase.js";
 
+// -----------------------------------------------------------------------------
+// Upload the file to Supabase Storage (returns the internal path)
+// -----------------------------------------------------------------------------
 export async function uploadCVToSupabase(file) {
-  const filePath = `uploads/${Date.now()}-${file.originalname}`;
+  const ext = file.originalname.split(".").pop();
+  const safeName = `${Date.now()}-${crypto.randomUUID()}.${ext}`;
+  const filePath = `uploads/${safeName}`;
 
-  const { error } = await supabase.storage
+  const { data, error } = await supabase.storage
     .from("cv-files")
     .upload(filePath, file.buffer, {
       contentType: file.mimetype,
@@ -20,25 +26,48 @@ export async function uploadCVToSupabase(file) {
     });
 
   if (error) {
-    throw new Error("Error uploading file to Supabase Storage");
+    throw new Error("Error uploading file to Supabase Storage: " + error.message);
   }
+
+  return filePath;
 }
 
-export async function extractCVText(file) {
-  const ext = path.extname(file.originalname).toLowerCase();
+// -----------------------------------------------------------------------------
+// Download file from Supabase Storage (returns a Buffer)
+// -----------------------------------------------------------------------------
+export async function downloadFromSupabase(filePath) {
+  const { data, error } = await supabase.storage
+    .from("cv-files")
+    .download(filePath);
 
-  if (ext === ".txt") {
-    return file.buffer.toString("utf8");
+  if (error) {
+    throw new Error("Error downloading file from Supabase Storage");
   }
 
-  if (ext === ".pdf") {
-    // pdf-parse works normally once imported with CommonJS
-    const data = await pdfParse(file.buffer);
+  // Convert Blob → Buffer
+  const arrayBuffer = await data.arrayBuffer();
+  return Buffer.from(arrayBuffer);
+}
+
+// -----------------------------------------------------------------------------
+// Extract text (uses STORAGE BUFFER, not Multer RAM buffer)
+// -----------------------------------------------------------------------------
+export async function extractCVTextFromStorage(filePath) {
+  const fileExt = path.extname(filePath).toLowerCase();
+
+  const buffer = await downloadFromSupabase(filePath);
+
+  if (fileExt === ".txt") {
+    return buffer.toString("utf8");
+  }
+
+  if (fileExt === ".pdf") {
+    const data = await pdfParse(buffer);
     return data.text;
   }
 
-  if (ext === ".docx") {
-    const { value } = await mammoth.extractRawText({ buffer: file.buffer });
+  if (fileExt === ".docx") {
+    const { value } = await mammoth.extractRawText({ buffer });
     return value;
   }
 

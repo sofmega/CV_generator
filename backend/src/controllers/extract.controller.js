@@ -1,5 +1,8 @@
 // backend/src/controllers/extract.controller.js
-import { extractCVText, uploadCVToSupabase } from "../services/extract/cvExtract.service.js";
+import {
+  uploadCVToSupabase,
+  extractCVTextFromStorage,
+} from "../services/extract/cvExtract.service.js";
 
 export const extractCVController = async (req, res) => {
   try {
@@ -9,11 +12,11 @@ export const extractCVController = async (req, res) => {
 
     const file = req.file;
 
-    // Upload to Supabase storage
-    await uploadCVToSupabase(file);
+    // 1️⃣ Upload file to Supabase Storage
+    const filePath = await uploadCVToSupabase(file);
 
-    // Extract text
-    const text = await extractCVText(file);
+    // 2️⃣ Extract text from stored file (NOT from memory)
+    const text = await extractCVTextFromStorage(filePath);
 
     return res.json({ text });
   } catch (err) {
