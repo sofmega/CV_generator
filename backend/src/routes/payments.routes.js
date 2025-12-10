@@ -3,24 +3,31 @@ import express from "express";
 import Stripe from "stripe";
 
 import { supabase } from "../config/supabase.js";
-import { env } from "../config/env.js"; 
+import { env } from "../config/env.js";
+import { authMiddleware } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// Stripe client with validated API key
+// Initialize Stripe using secure, validated environment variables
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 // -----------------------------------------------------------------------------
-// Create Checkout Session
+// Protected: Create Checkout Session
 // -----------------------------------------------------------------------------
-router.post("/create-checkout-session", async (req, res) => {
+router.post("/create-checkout-session", authMiddleware, async (req, res) => {
   try {
-    const { priceId, userId, email } = req.body;
+    const { priceId } = req.body;
 
-    if (!priceId || !userId || !email) {
-      return res.status(400).json({ error: "Missing parameters" });
+    // Only priceId should come from the frontend
+    if (!priceId) {
+      return res.status(400).json({ error: "Missing priceId" });
     }
 
+    // User identity must come from Supabase JWT, not the frontend
+    const userId = req.user.id;
+    const email = req.user.email;
+
+    // Create a Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
@@ -31,25 +38,25 @@ router.post("/create-checkout-session", async (req, res) => {
       success_url: `${env.FRONTEND_URL}/payment-success`,
       cancel_url: `${env.FRONTEND_URL}/pricing`,
 
-      // Metadata stored → webhook uses it
+      // Will be used later inside Stripe webhook
       metadata: { userId, priceId },
     });
 
-    res.json({ url: session.url });
+    // Return checkout URL to the frontend
+    return res.json({ url: session.url });
   } catch (err) {
     console.error("Checkout Error:", err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 });
 
 // -----------------------------------------------------------------------------
-// Stripe Webhook (raw body required → configured in app.js)
+// Stripe Webhook (must use raw body in app.js)
 // -----------------------------------------------------------------------------
 router.post("/webhook", async (req, res) => {
   const signature = req.headers["stripe-signature"];
 
   let event;
-
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
@@ -61,6 +68,7 @@ router.post("/webhook", async (req, res) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
+  // Handle Stripe event types
   try {
     switch (event.type) {
       case "checkout.session.completed": {
@@ -82,6 +90,7 @@ router.post("/webhook", async (req, res) => {
 
       case "customer.subscription.deleted": {
         const subscription = event.data.object;
+
         const userId = subscription.metadata.userId;
 
         await supabase
@@ -96,7 +105,7 @@ router.post("/webhook", async (req, res) => {
       }
 
       default:
-        // Ignore other events but acknowledge reception
+        // Ignore unhandled events but acknowledge receipt
         break;
     }
   } catch (err) {
@@ -104,7 +113,7 @@ router.post("/webhook", async (req, res) => {
     return res.status(500).send("Server Error");
   }
 
-  res.json({ received: true });
+  return res.json({ received: true });
 });
 
 export default router;

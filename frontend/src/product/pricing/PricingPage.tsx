@@ -4,6 +4,7 @@ import Card from "../../components/ui/Card";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { getAuthHeaders } from "../../lib/api"; 
 
 export default function PricingPage() {
   const { user } = useAuth();
@@ -34,15 +35,18 @@ export default function PricingPage() {
     setLoadingPlan(priceId);
 
     try {
+      const headers = await getAuthHeaders(); 
+
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/payments/create-checkout-session`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...headers, 
+          },
           body: JSON.stringify({
-            priceId,
-            userId: user.id,
-            email: user.email,
+            priceId, 
           }),
         }
       );
