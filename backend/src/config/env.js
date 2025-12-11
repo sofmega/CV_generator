@@ -2,7 +2,6 @@
 import "dotenv/config";
 import { cleanEnv, str, url, port } from "envalid";
 
-//  Validate environment variables
 export const env = cleanEnv(process.env, {
   PORT: port({ default: 8080 }),
 
@@ -18,7 +17,6 @@ export const env = cleanEnv(process.env, {
   FRONTEND_URL: url(),
 });
 
-//  Export grouped config object 
 export const config = {
   server: {
     port: env.PORT,
