@@ -4,6 +4,8 @@ import {
   extractCVTextFromStorage,
 } from "../services/extract/cvExtract.service.js";
 
+import { logger } from "../config/logger.js";
+
 export const extractCVController = async (req, res, next) => {
   try {
     if (!req.file) {
@@ -17,6 +19,7 @@ export const extractCVController = async (req, res, next) => {
 
     return res.json({ text });
   } catch (err) {
+    logger.error({ err }, "CV extraction failed");
     next(err);
   }
 };

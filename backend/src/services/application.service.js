@@ -1,5 +1,6 @@
 // backend/src/services/application.service.js
 import { supabase } from "../config/supabase.js";
+import { logger } from "../config/logger.js";
 
 export async function saveApplication({
   jobDescription,
@@ -19,10 +20,9 @@ export async function saveApplication({
     .single();
 
   if (error) {
-    console.error("DB insert failed:", error);
-   
+    logger.error({ err: error }, "DB insert failed");
     throw new Error("Failed to save application");
   }
 
-  return data; 
+  return data;
 }

@@ -2,6 +2,7 @@
 import { generateCVText } from "../services/cv/cvText.service.js";
 import { generateCVPdf } from "../services/cv/cvPdf.service.js";
 import { saveApplication } from "../services/application.service.js";
+import { logger } from "../config/logger.js";
 
 // Generate CV (TEXT)
 export const generateCVTextController = async (req, res, next) => {
@@ -19,6 +20,7 @@ export const generateCVTextController = async (req, res, next) => {
 
     return res.json({ result });
   } catch (err) {
+    logger.error({ err }, "CV text generation failed");
     next(err);
   }
 };
@@ -35,6 +37,7 @@ export const generateCVPdfController = async (req, res, next) => {
 
     return res.send(pdfBuffer);
   } catch (err) {
+    logger.error({ err }, "CV PDF generation failed");
     next(err);
   }
 };

@@ -1,7 +1,7 @@
 // backend/src/controllers/lm.controller.js
-import { generateLMText } from "../services/lm/lmText.service.js";
 import { generateLMPdf } from "../services/lm/lmPdf.service.js";
 import { saveApplication } from "../services/application.service.js";
+import { logger } from "../config/logger.js";
 
 export const generateLMPdfController = async (req, res, next) => {
   try {
@@ -27,6 +27,7 @@ export const generateLMPdfController = async (req, res, next) => {
 
     return res.send(pdfBuffer);
   } catch (err) {
+    logger.error({ err }, "LM PDF generation error");
     next(err);
   }
 };

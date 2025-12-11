@@ -1,26 +1,34 @@
 // backend/src/middleware/rateLimit.js
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import { logger } from "../config/logger.js";
 
 // Helper to create a limiter that prefers user.id over IP
 export function createUserRateLimiter({ windowMs, max }) {
   return rateLimit({
     windowMs,
     max,
-    standardHeaders: true, // adds RateLimit-* headers
-    legacyHeaders: false,  // disables X-RateLimit-* headers
+    standardHeaders: true,
+    legacyHeaders: false,
 
-    keyGenerator: (req) => {
-      // If the user is authenticated, use their Supabase user.id
-      if (req.user && req.user.id) {
-        return req.user.id;
-      }
+    keyGenerator: (req, res) => {
+      // Prefer authenticated user
+      if (req.user?.id) return req.user.id;
 
-      // Fallback to IP for unauthenticated routes (if you ever use it there)
-      return req.ip;
+      // Safe fallback for IPv4/IPv6
+      return ipKeyGenerator(req, res);
     },
 
-    handler: (req, res /*, next */) => {
-      // Called when limit is exceeded
+    handler: (req, res) => {
+      // Log rate limit event (recommended)
+      logger.warn(
+        {
+          userId: req.user?.id || null,
+          ip: req.ip,
+          route: req.originalUrl,
+        },
+        "Rate limit exceeded"
+      );
+
       return res.status(429).json({
         error: "Too many requests. Please slow down.",
       });
@@ -28,14 +36,14 @@ export function createUserRateLimiter({ windowMs, max }) {
   });
 }
 
-// Specific limiter for AI generations (CV, LM, etc.)
+// AI generation rate limiter
 export const aiGenerationLimiter = createUserRateLimiter({
   windowMs: 60 * 1000, // 1 minute
-  max: 10,             // 10 requests per minute per user
+  max: 10,             // 10 requests per user
 });
 
-// Specific limiter for file uploads
+// File upload rate limiter
 export const uploadLimiter = createUserRateLimiter({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 5,                  // 5 uploads per 5 minutes per user
+  max: 5,                  // 5 uploads per user
 });

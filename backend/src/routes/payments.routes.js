@@ -1,58 +1,43 @@
 // backend/src/routes/payments.routes.js
 import express from "express";
 import Stripe from "stripe";
-
 import { supabase } from "../config/supabase.js";
 import { env } from "../config/env.js";
 import { authMiddleware } from "../middleware/auth.js";
+import { logger } from "../config/logger.js";
 
 const router = express.Router();
-
-// Initialize Stripe using secure, validated environment variables
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
-// Whitelist allowed price IDs
 const ALLOWED_PRICE_IDS = new Set([
-  "price_1Sc6euLPQul2TqUGUBDjs9de", // Starter
-  "price_1Sc6fcLPQul2TqUGKIlyWCGN", // Pro
+  "price_1Sc6euLPQul2TqUGUBDjs9de",
+  "price_1Sc6fcLPQul2TqUGKIlyWCGN",
 ]);
 
-// -----------------------------------------------------------------------------
-// Protected: Create Checkout Session
-// -----------------------------------------------------------------------------
-router.post("/create-checkout-session", authMiddleware, async (req, res) => {
+// Protected — Create Checkout Session
+router.post("/create-checkout-session", authMiddleware, async (req, res, next) => {
   try {
     const { priceId } = req.body;
 
-    // Only priceId should come from the frontend
     if (!priceId) {
       return res.status(400).json({ error: "Missing priceId" });
     }
 
-    // Validate against whitelist
     if (!ALLOWED_PRICE_IDS.has(priceId)) {
       return res.status(400).json({ error: "Invalid priceId" });
     }
 
-    // User identity must come from Supabase JWT
     const userId = req.user.id;
     const email = req.user.email;
 
-    // Create a Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
       customer_email: email,
-
       line_items: [{ price: priceId, quantity: 1 }],
-
       success_url: `${env.FRONTEND_URL}/payment-success`,
       cancel_url: `${env.FRONTEND_URL}/pricing`,
-
-      // Metadata on the session itself
       metadata: { userId, priceId },
-
-      // Metadata that will propagate to the subscription object
       subscription_data: {
         metadata: { userId, priceId },
       },
@@ -60,14 +45,14 @@ router.post("/create-checkout-session", authMiddleware, async (req, res) => {
 
     return res.json({ url: session.url });
   } catch (err) {
-    console.error("Checkout Error:", err);
-    return res.status(500).json({ error: err.message });
+    logger.error({ err }, "Stripe checkout error");
+    next(err);
   }
 });
 
-// -----------------------------------------------------------------------------
+// ------------------------
 // Stripe Webhook
-// -----------------------------------------------------------------------------
+// ------------------------
 router.post("/webhook", async (req, res) => {
   const signature = req.headers["stripe-signature"];
 
@@ -79,7 +64,7 @@ router.post("/webhook", async (req, res) => {
       env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    console.error("Webhook Signature Error:", err.message);
+    logger.error({ err }, "Stripe webhook signature error");
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
@@ -97,13 +82,12 @@ router.post("/webhook", async (req, res) => {
             plan_id: priceId,
           })
           .eq("user_id", userId);
-
         break;
       }
 
       case "customer.subscription.deleted": {
         const subscription = event.data.object;
-        const userId = subscription.metadata.userId; 
+        const userId = subscription.metadata.userId;
 
         await supabase
           .from("profiles")
@@ -112,7 +96,6 @@ router.post("/webhook", async (req, res) => {
             plan_id: null,
           })
           .eq("user_id", userId);
-
         break;
       }
 
@@ -120,7 +103,7 @@ router.post("/webhook", async (req, res) => {
         break;
     }
   } catch (err) {
-    console.error("Webhook processing failed:", err);
+    logger.error({ err }, "Stripe webhook processing failed");
     return res.status(500).send("Server Error");
   }
 
