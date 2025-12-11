@@ -2,6 +2,7 @@
 import express from "express";
 import cors from "cors";
 import routes from "./routes/index.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.use(
     origin: allowedOrigins,
   })
 );
-
+// Webhook RAW parser
 app.use(
   "/payments/webhook",
   express.raw({ type: "application/json" })
@@ -32,5 +33,8 @@ app.get("/", (req, res) => {
 
 // Auto-mounted routes
 app.use("/", routes);
+
+// GLOBAL ERROR HANDLER
+app.use(errorHandler);
 
 export default app;

@@ -4,23 +4,19 @@ import {
   extractCVTextFromStorage,
 } from "../services/extract/cvExtract.service.js";
 
-export const extractCVController = async (req, res) => {
+export const extractCVController = async (req, res, next) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
+      const error = new Error("No file uploaded");
+      error.status = 400;
+      throw error;
     }
 
-    const file = req.file;
-
-    // 1️⃣ Upload file to Supabase Storage
-    const filePath = await uploadCVToSupabase(file);
-
-    // 2️⃣ Extract text from stored file (NOT from memory)
+    const filePath = await uploadCVToSupabase(req.file);
     const text = await extractCVTextFromStorage(filePath);
 
     return res.json({ text });
   } catch (err) {
-    console.error("Extract error:", err);
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };

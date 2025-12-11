@@ -3,17 +3,13 @@ import { generateCVText } from "../services/cv/cvText.service.js";
 import { generateCVPdf } from "../services/cv/cvPdf.service.js";
 import { saveApplication } from "../services/application.service.js";
 
-// -----------------------------------------------------------------------------
-// Generate CV (TEXT VERSION)
-// -----------------------------------------------------------------------------
-export const generateCVTextController = async (req, res) => {
+// Generate CV (TEXT)
+export const generateCVTextController = async (req, res, next) => {
   try {
     const { jobDescription, cvText } = req.body;
 
-    //  Generate text
     const result = await generateCVText(jobDescription, cvText);
 
-    //  Save application attempt into DB
     await saveApplication({
       jobDescription,
       cvText,
@@ -23,28 +19,22 @@ export const generateCVTextController = async (req, res) => {
 
     return res.json({ result });
   } catch (err) {
-    console.error("CV text generation failed:", err);
-    return res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-// -----------------------------------------------------------------------------
-// Generate CV (PDF VERSION)
-// -----------------------------------------------------------------------------
-export const generateCVPdfController = async (req, res) => {
+// Generate CV (PDF)
+export const generateCVPdfController = async (req, res, next) => {
   try {
     const { jobDescription, cvText } = req.body;
 
-    //  Generate PDF buffer
     const pdfBuffer = await generateCVPdf(jobDescription, cvText);
 
-    //  Set headers
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", 'attachment; filename="CV.pdf"');
 
     return res.send(pdfBuffer);
   } catch (err) {
-    console.error("CV PDF generation failed:", err);
-    return res.status(500).json({ error: err.message });
+    next(err);
   }
 };
