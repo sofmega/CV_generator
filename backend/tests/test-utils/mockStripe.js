@@ -1,3 +1,4 @@
+// backend/tests/test-utils/mockStripe.js
 import { vi } from "vitest";
 
 export const mockCreateSession = vi.fn().mockResolvedValue({
