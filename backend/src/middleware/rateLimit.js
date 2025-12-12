@@ -3,23 +3,19 @@ import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { logger } from "../config/logger.js";
 
 // Helper to create a limiter that prefers user.id over IP
-export function createUserRateLimiter({ windowMs, max }) {
+export function createUserRateLimiter({ windowMs, limit }) {
   return rateLimit({
     windowMs,
-    max,
+    limit,
     standardHeaders: true,
     legacyHeaders: false,
 
-    keyGenerator: (req, res) => {
-      // Prefer authenticated user
+    keyGenerator: (req) => {
       if (req.user?.id) return req.user.id;
-
-      // Safe fallback for IPv4/IPv6
-      return ipKeyGenerator(req, res);
+      return ipKeyGenerator(req.ip); // safe IPv4/IPv6 handling
     },
 
     handler: (req, res) => {
-      // Log rate limit event (recommended)
       logger.warn(
         {
           userId: req.user?.id || null,
@@ -39,11 +35,11 @@ export function createUserRateLimiter({ windowMs, max }) {
 // AI generation rate limiter
 export const aiGenerationLimiter = createUserRateLimiter({
   windowMs: 60 * 1000, // 1 minute
-  max: 10,             // 10 requests per user
+  limit: 10,          // 10 requests per user
 });
 
 // File upload rate limiter
 export const uploadLimiter = createUserRateLimiter({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 5,                  // 5 uploads per user
+  limit: 5,               // 5 uploads per user
 });
