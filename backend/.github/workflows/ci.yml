@@ -36,13 +36,6 @@ jobs:
       - name: Tests
         env:
           NODE_ENV: test
-          # If your tests require env vars, add them here (or use GitHub Secrets).
-          # SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          # SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          # SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          # STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-          # STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
-          # OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: npm test
 
   frontend:
@@ -72,10 +65,6 @@ jobs:
 
       - name: Build (recommended)
         env:
-          # Provide build-time envs if your build needs them
-          # VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-          # VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          # VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           CI: true
         run: npm run build --if-present
 
