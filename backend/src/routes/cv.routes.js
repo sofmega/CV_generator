@@ -6,11 +6,12 @@ import {
   generateCVPdfController,
 } from "../controllers/cv.controller.js";
 import { aiGenerationLimiter } from "../middleware/rateLimit.js";
+import { usageLimiter } from "../middleware/usageLimiter.js";
 
 const router = Router();
 
 // 🔒 Protect routes
-router.post("/text", authMiddleware, aiGenerationLimiter, generateCVTextController);
-router.post("/pdf", authMiddleware, aiGenerationLimiter, generateCVPdfController);
+router.post("/text", authMiddleware, aiGenerationLimiter, usageLimiter, generateCVTextController);
+router.post("/pdf", authMiddleware, aiGenerationLimiter, usageLimiter, generateCVPdfController);
 
 export default router;
