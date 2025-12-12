@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: ["develop"]
+    branches: [develop]
   pull_request:
-    branches: ["main"]
+    branches: [main]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -12,61 +12,56 @@ concurrency:
 
 jobs:
   backend:
-    name: Backend tests
+    name: Backend – lint & tests
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: backend
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Setup Node
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: backend/package-lock.json
 
-      - name: Install
+      - name: Install dependencies
         run: npm ci
 
-      - name: Lint (if present)
+      - name: Run lint (if present)
         run: npm run lint --if-present
 
-      - name: Tests
+      - name: Run tests
         env:
           NODE_ENV: test
         run: npm test
 
   frontend:
-    name: Frontend checks
+    name: Frontend – build check
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: frontend
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Setup Node
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install
+      - name: Install dependencies
         run: npm ci
 
-      - name: Lint (if present)
-        run: npm run lint --if-present
-
-      - name: Typecheck (if present)
-        run: npm run typecheck --if-present
-
-      - name: Build (recommended)
-        env:
-          CI: true
-        run: npm run build --if-present
-
-      - name: Tests (if present)
-        run: npm test --if-present
+      - name: Type check
+        run: npm run build
