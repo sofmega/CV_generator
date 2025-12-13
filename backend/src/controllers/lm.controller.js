@@ -19,7 +19,7 @@ export const generateLMPdfController = async (req, res, next) => {
       userId: req.user.id,
       jobDescription,
       cvText,
-      type: "cover-letter-pdf",
+      type: "coverLetter",
       generatedText: "PDF generated",
     });
 

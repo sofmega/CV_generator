@@ -15,7 +15,7 @@ export const generateCVTextController = async (req, res, next) => {
       userId: req.user.id,
       jobDescription,
       cvText,
-      type: "cv-text",
+      type: "cv",
       generatedText: result,
     });
 
