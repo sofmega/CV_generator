@@ -12,6 +12,7 @@ export const generateCVTextController = async (req, res, next) => {
     const result = await generateCVText(jobDescription, cvText);
 
     await saveApplication({
+      userId: req.user.id,
       jobDescription,
       cvText,
       type: "cv-text",

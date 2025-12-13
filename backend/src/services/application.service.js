@@ -3,6 +3,7 @@ import { supabase } from "../config/supabase.js";
 import { logger } from "../config/logger.js";
 
 export async function saveApplication({
+  userId,
   jobDescription,
   cvText,
   type,
@@ -11,6 +12,7 @@ export async function saveApplication({
   const { data, error } = await supabase
     .from("applications")
     .insert({
+      user_id: userId, 
       job_description: jobDescription,
       cv_text: cvText || null,
       generated_type: type,
