@@ -22,9 +22,18 @@ export async function saveApplication({
     .single();
 
   if (error) {
-    logger.error({ err: error }, "DB insert failed");
-    throw new Error("Failed to save application");
-  }
+  logger.error(
+    {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    },
+    "DB insert failed (applications)"
+  );
+  throw new Error(`Failed to save application: ${error.message}`);
+}
+
 
   return data;
 }
