@@ -16,6 +16,7 @@ export const generateLMPdfController = async (req, res, next) => {
     const pdfBuffer = await generateLMPdf(jobDescription, cvText);
 
     await saveApplication({
+      userId: req.user.id,
       jobDescription,
       cvText,
       type: "cover-letter-pdf",

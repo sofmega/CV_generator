@@ -11,7 +11,7 @@ import { usageLimiter } from "../middleware/usageLimiter.js";
 const router = Router();
 
 // 🔒 Protect routes
-router.post("/text", authMiddleware, aiGenerationLimiter, usageLimiter, generateCVTextController);
-router.post("/pdf", authMiddleware, aiGenerationLimiter, usageLimiter, generateCVPdfController);
+router.post("/text", authMiddleware, usageLimiter, aiGenerationLimiter, generateCVTextController);
+router.post("/pdf", authMiddleware, usageLimiter, aiGenerationLimiter, generateCVPdfController);
 
 export default router;
