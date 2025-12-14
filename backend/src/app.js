@@ -30,7 +30,7 @@ app.use(
 
 // 4️⃣ Stripe webhook RAW parser
 app.use(
-  "/payments/webhook",
+  "/webhooks/stripe",
   express.raw({ type: "application/json" })
 );
 
