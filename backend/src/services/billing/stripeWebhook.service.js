@@ -1,4 +1,4 @@
-// services/billing/stripeWebhook.service.js
+// backend/src/services/billing/stripeWebhook.service.js
 import { supabase } from "../../config/supabase.js";
 import { PLANS } from "../../config/plans.js";
 
@@ -8,23 +8,23 @@ const PRICE_TO_PLAN = {
 };
 
 export async function handleStripeEvent(event) {
-  // 1️⃣ Check if already processed
-  const { data: existing } = await supabase
-    .from("stripe_events")
-    .select("id")
-    .eq("id", event.id)
-    .single();
+  // 1️⃣ Idempotency check
+  const { data: existing, error: existingErr } = await supabase
+  .from("stripe_events")
+  .select("id")
+  .eq("id", event.id)
+  .maybeSingle();
 
-  if (existing) return;
+if (existing) return;
 
-  // 2️⃣ Insert event id (idempotency guard)
-  const { error: insertError } = await supabase
-    .from("stripe_events")
-    .insert({ id: event.id });
+const { error: insertErr } = await supabase
+  .from("stripe_events")
+  .insert({ id: event.id });
 
-  if (insertError) return;
+if (insertErr) return;
 
-  // 3️⃣ Handle event
+
+  // 2️⃣ Handle events
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object;
@@ -36,6 +36,8 @@ export async function handleStripeEvent(event) {
       await supabase
         .from("profiles")
         .update({
+          stripe_customer_id: session.customer,
+          stripe_subscription_id: session.subscription,
           subscription_status: "active",
           plan,
           generation_limit: PLANS[plan].limit,
@@ -47,9 +49,33 @@ export async function handleStripeEvent(event) {
       break;
     }
 
+    case "customer.subscription.updated": {
+  const subscription = event.data.object;
+  const userId = subscription.metadata.userId;
+  if (!userId) return;
+
+  const priceId = subscription.items.data[0].price.id;
+  const plan = PRICE_TO_PLAN[priceId];
+  if (!plan) return;
+
+  await supabase
+    .from("profiles")
+    .update({
+      plan,
+      generation_limit: PLANS[plan].limit,
+      subscription_status: subscription.status,
+      // ❗ DO NOT touch usage_reset_at here
+    })
+    .eq("user_id", userId);
+
+  break;
+}
+
+
     case "customer.subscription.deleted": {
       const subscription = event.data.object;
       const userId = subscription.metadata.userId;
+      if (!userId) return;
 
       await supabase
         .from("profiles")

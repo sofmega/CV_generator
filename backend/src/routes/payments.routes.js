@@ -1,3 +1,4 @@
+// backend/src/routes/payments.routes.js
 import { Router } from "express";
 import Stripe from "stripe";
 import { authMiddleware } from "../middleware/auth.js";
@@ -19,21 +20,27 @@ router.post(
       }
 
       const session = await stripe.checkout.sessions.create({
-        mode: "subscription",
-        payment_method_types: ["card"],
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
-          },
-        ],
-        success_url: `${env.FRONTEND_URL}/success`,
-        cancel_url: `${env.FRONTEND_URL}/pricing`,
-        metadata: {
-          userId: req.user.id, // 👈 IMPORTANT (used by webhook)
-          priceId,
-        },
-      });
+  mode: "subscription",
+  payment_method_types: ["card"],
+  line_items: [
+    {
+      price: priceId,
+      quantity: 1,
+    },
+  ],
+  success_url: `${env.FRONTEND_URL}/success`,
+  cancel_url: `${env.FRONTEND_URL}/pricing`,
+  metadata: {
+    userId: req.user.id,
+    priceId,
+  },
+  subscription_data: {
+    metadata: {
+      userId: req.user.id, 
+    },
+  },
+});
+
 
       // 🔥 THIS LINE FIXES THE 504
       return res.json({ url: session.url });
