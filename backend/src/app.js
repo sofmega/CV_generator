@@ -21,14 +21,17 @@ app.use(requestId);
 // 2️⃣ bind Pino logger with requestId
 app.use(requestLogger);
 
-// 3️⃣ CORS
+// 3️⃣ CORS (FIXED: allow Authorization header)
 app.use(
   cors({
     origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
-// 4️⃣ Stripe webhook RAW parser
+// 4️⃣ Stripe webhook RAW parser (MUST be before json)
 app.use(
   "/webhooks/stripe",
   express.raw({ type: "application/json" })
