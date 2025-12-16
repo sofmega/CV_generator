@@ -1,8 +1,7 @@
 // frontend/src/components/layout/Header.tsx
 import { Link } from "react-router-dom";
-import NavbarButton from "../ui/NavbarButton";
 import { useAuthContext } from "../../hooks/useAuthContext";
-import { supabase } from "../../lib/supabase";
+import ProfileMenu from "./ProfileMenu";
 
 export default function Header() {
   const { user } = useAuthContext();
@@ -35,16 +34,7 @@ export default function Header() {
             </Link>
           </>
         ) : (
-          <>
-            <span className="text-gray-700">{user.email}</span>
-
-            <NavbarButton
-              className="text-red-500"
-              onClick={() => supabase.auth.signOut()}
-            >
-              Logout
-            </NavbarButton>
-          </>
+          <ProfileMenu />
         )}
       </div>
     </header>
