@@ -28,7 +28,6 @@ export function GeneratePage() {
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center px-4 py-10">
       <Card className="w-full max-w-3xl">
-
         <h1 className="text-3xl font-bold mb-2 text-gray-800">
           AI Job Application Assistant
         </h1>
@@ -48,18 +47,33 @@ export function GeneratePage() {
           />
         </div>
 
-        {/* CV Upload */}
+        {/* CV Upload (Professional button) */}
         <div className="mb-6">
-          <label className="block font-semibold mb-2 text-gray-700">
+          <label className="block font-semibold mb-3 text-gray-700">
             Upload Your CV (PDF / DOCX / TXT)
           </label>
 
+          {/* Hidden native input */}
           <input
+            id="cv-upload"
             type="file"
             accept=".pdf,.doc,.docx,.txt"
             onChange={handleCVUpload}
-            className="block cursor-pointer"
+            className="hidden"
           />
+
+          {/* Styled button */}
+          <label
+            htmlFor="cv-upload"
+            className="inline-flex items-center justify-center w-full sm:w-auto px-10 py-5 rounded-2xl bg-indigo-600 text-white font-bold text-xl shadow-md cursor-pointer hover:bg-indigo-700 transition"
+          >
+            Upload your CV
+          </label>
+
+          {/* Status text */}
+          <p className="text-sm text-gray-500 mt-2">
+            {cvText ? "File selected ✅" : "No file selected"}
+          </p>
 
           {cvText && (
             <p className="text-green-600 mt-2 font-medium">
@@ -68,7 +82,7 @@ export function GeneratePage() {
           )}
         </div>
 
-        {/* MAIN ACTIONS */}
+        {/* MAIN ACTIONS (only 2 visible) */}
         <div className="flex flex-wrap gap-3 mb-4">
           <Button
             variant="primary"
@@ -89,7 +103,8 @@ export function GeneratePage() {
 
         {/* ADVANCED TOGGLE */}
         <button
-          onClick={() => setShowAdvanced(!showAdvanced)}
+          type="button"
+          onClick={() => setShowAdvanced((v) => !v)}
           className="text-sm text-gray-600 hover:text-gray-900 underline mb-4"
         >
           {showAdvanced ? "Hide advanced options" : "Advanced options"}
@@ -106,13 +121,7 @@ export function GeneratePage() {
               Generate CV (Text)
             </Button>
 
-            <Button
-              variant="secondary"
-              onClick={() => onGenerateClick("coverLetter")}
-              loading={isLoading && lastType === "coverLetter"}
-            >
-              Generate Cover Letter (Text)
-            </Button>
+            {/* If you later add a real cover-letter-text type, we can add it here */}
           </div>
         )}
 
