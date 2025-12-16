@@ -1,4 +1,5 @@
 // frontend/src/product/generator/GeneratePage.tsx
+import { useState } from "react";
 import { useGenerator } from "../../hooks/useGenerator";
 import type { GenerateType } from "./types";
 
@@ -10,15 +11,15 @@ export function GeneratePage() {
   const {
     jobOffer,
     cvText,
-    generatedText,
     isLoading,
     error,
     lastType,
     setJobOffer,
     handleCVUpload,
     handleGenerate,
-    handleDownload,
   } = useGenerator();
+
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const onGenerateClick = (type: GenerateType) => {
     handleGenerate(type);
@@ -67,16 +68,8 @@ export function GeneratePage() {
           )}
         </div>
 
-        {/* Buttons */}
-        <div className="flex flex-wrap gap-3 mb-6">
-          <Button
-            variant="primary"
-            onClick={() => onGenerateClick("cv")}
-            loading={isLoading && lastType === "cv"}
-          >
-            Generate CV (Text)
-          </Button>
-
+        {/* MAIN ACTIONS */}
+        <div className="flex flex-wrap gap-3 mb-4">
           <Button
             variant="primary"
             onClick={() => onGenerateClick("cv-pdf")}
@@ -92,15 +85,36 @@ export function GeneratePage() {
           >
             Generate Cover Letter (PDF)
           </Button>
-
-          <Button
-            variant="secondary"
-            onClick={handleDownload}
-            disabled={!generatedText || lastType === "coverLetter"}
-          >
-            Download CV (Text)
-          </Button>
         </div>
+
+        {/* ADVANCED TOGGLE */}
+        <button
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="text-sm text-gray-600 hover:text-gray-900 underline mb-4"
+        >
+          {showAdvanced ? "Hide advanced options" : "Advanced options"}
+        </button>
+
+        {/* ADVANCED OPTIONS */}
+        {showAdvanced && (
+          <div className="flex flex-wrap gap-3 mb-6 p-4 bg-gray-50 rounded-md border">
+            <Button
+              variant="secondary"
+              onClick={() => onGenerateClick("cv")}
+              loading={isLoading && lastType === "cv"}
+            >
+              Generate CV (Text)
+            </Button>
+
+            <Button
+              variant="secondary"
+              onClick={() => onGenerateClick("coverLetter")}
+              loading={isLoading && lastType === "coverLetter"}
+            >
+              Generate Cover Letter (Text)
+            </Button>
+          </div>
+        )}
 
         {error && <p className="text-red-600 font-medium">{error}</p>}
       </Card>
