@@ -10,15 +10,23 @@ export function useAuth() {
   const navigate = useNavigate();
 
   // -----------------------
-  // Register user
+  // Register user (REQUIRES full name)
   // -----------------------
-  async function signUp(email: string, password: string) {
+  async function signUp(fullName: string, email: string, password: string) {
     setError(null);
+
+    if (!fullName?.trim()) {
+      setError("Please enter your full name.");
+      return false;
+    }
 
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        data: {
+          full_name: fullName.trim(), 
+        },
         emailRedirectTo: `${window.location.origin}/login`,
       },
     });
@@ -73,12 +81,12 @@ export function useAuth() {
   async function resetPassword(email: string) {
     setError(null);
 
-    if (!email) {
+    if (!email?.trim()) {
       setError("Please enter your email first.");
       return false;
     }
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
 
@@ -101,7 +109,7 @@ export function useAuth() {
   return {
     user,
     signIn,
-    signUp,
+    signUp, 
     signOut,
     signInWithGoogle,
     resetPassword,
