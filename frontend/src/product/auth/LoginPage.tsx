@@ -5,6 +5,8 @@ import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import { Link } from "react-router-dom";
+import GoogleIcon from "../../components/ui/icons/GoogleIcon";
+
 
 export default function LoginPage() {
   const { signIn, signInWithGoogle, error } = useAuth(); // ⭐ FIXED: added signInWithGoogle
@@ -36,12 +38,13 @@ export default function LoginPage() {
             Login
           </Button>
 
-          <Button
-            variant="secondary"
-            onClick={signInWithGoogle}
-          >
-            Continue with Google
-          </Button>
+          <Button variant="secondary" onClick={signInWithGoogle}>
+  <span className="flex items-center justify-center gap-2">
+    <GoogleIcon />
+    Continue with Google
+  </span>
+</Button>
+
 
           <p className="text-center text-gray-600">
             Don't have an account?{" "}

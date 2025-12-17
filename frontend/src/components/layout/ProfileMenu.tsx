@@ -35,7 +35,7 @@ export default function ProfileMenu() {
     return () => clearCloseTimer();
   }, []);
 
-  // ✅ early return AFTER hooks
+  //  early return AFTER hooks
   if (!user) return null;
 
   const email = user.email ?? "";

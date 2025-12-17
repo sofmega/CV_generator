@@ -8,6 +8,7 @@ import RegisterPage from "./product/auth/RegisterPage";
 import AuthCallback from "./product/auth/AuthCallback";
 import PricingPage from "./product/pricing/PricingPage";
 import PaymentSuccess from "./product/pricing/PaymentSuccess";
+import AccountPage from "./product/account/AccountPage";
 
 
 export default function App() {
@@ -23,6 +24,8 @@ export default function App() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/account" element={<AccountPage />} />
+
 
           
 
