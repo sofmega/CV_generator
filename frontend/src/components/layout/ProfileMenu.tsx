@@ -1,5 +1,5 @@
 // frontend/src/components/layout/ProfileMenu.tsx
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuthContext } from "../../hooks/useAuthContext";
@@ -7,23 +7,55 @@ import { useAuthContext } from "../../hooks/useAuthContext";
 export default function ProfileMenu() {
   const { user } = useAuthContext();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
 
+  const [open, setOpen] = useState(false);
+  const closeTimerRef = useRef<number | null>(null);
+
+  const clearCloseTimer = () => {
+    if (closeTimerRef.current) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const openMenu = () => {
+    clearCloseTimer();
+    setOpen(true);
+  };
+
+  const closeMenuWithDelay = () => {
+    clearCloseTimer();
+    closeTimerRef.current = window.setTimeout(() => {
+      setOpen(false);
+      closeTimerRef.current = null;
+    }, 100);
+  };
+
+  useEffect(() => {
+    return () => clearCloseTimer();
+  }, []);
+
+  //  early return AFTER hooks
   if (!user) return null;
 
   const email = user.email ?? "";
   const initials = email.slice(0, 2).toUpperCase();
-
   const avatarUrl = user.user_metadata?.avatar_url;
 
   return (
     <div
       className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseEnter={openMenu}
+      onMouseLeave={closeMenuWithDelay}
     >
-      {/* Avatar */}
-      <button className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
+      <button
+        type="button"
+        className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold"
+        onFocus={openMenu}
+        onBlur={closeMenuWithDelay}
+        aria-haspopup="menu"
+        aria-expanded={open}
+      >
         {avatarUrl ? (
           <img
             src={avatarUrl}
@@ -35,9 +67,11 @@ export default function ProfileMenu() {
         )}
       </button>
 
-      {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border z-50">
+        <div
+          className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border z-50"
+          role="menu"
+        >
           <div className="px-4 py-3 border-b">
             <p className="text-sm font-medium text-gray-800 truncate">
               {user.user_metadata?.full_name || "User"}
@@ -48,6 +82,7 @@ export default function ProfileMenu() {
           <button
             onClick={() => navigate("/account")}
             className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+            role="menuitem"
           >
             Account settings
           </button>
@@ -55,6 +90,7 @@ export default function ProfileMenu() {
           <button
             onClick={() => navigate("/pricing")}
             className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+            role="menuitem"
           >
             Manage subscription
           </button>
@@ -65,6 +101,7 @@ export default function ProfileMenu() {
               navigate("/login");
             }}
             className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+            role="menuitem"
           >
             Logout
           </button>

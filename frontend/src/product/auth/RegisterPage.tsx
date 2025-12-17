@@ -5,19 +5,19 @@ import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import { Link } from "react-router-dom";
+import GoogleIcon from "../../components/ui/icons/GoogleIcon";
 
 export default function RegisterPage() {
   const { signUp, signInWithGoogle, error } = useAuth();
+
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [registered, setRegistered] = useState(false);
 
   async function handleRegister() {
-    const success = await signUp(email, password);
-
-    if (success) {
-      setRegistered(true);
-    }
+    const success = await signUp(fullName, email, password);
+    if (success) setRegistered(true);
   }
 
   return (
@@ -34,15 +34,19 @@ export default function RegisterPage() {
               Please check your inbox and verify your email before logging in.
             </p>
 
-            <Link
-              to="/login"
-              className="text-blue-600 underline font-medium"
-            >
+            <Link to="/login" className="text-blue-600 underline font-medium">
               Go to Login
             </Link>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
+            <Input
+              label="Full name"
+              placeholder="John Doe"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+
             <Input
               label="Email"
               placeholder="you@example.com"
@@ -58,15 +62,13 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
 
-            <Button onClick={handleRegister}>
-              Register
-            </Button>
+            <Button onClick={handleRegister}>Register</Button>
 
-            <Button
-              variant="secondary"
-              onClick={signInWithGoogle}
-            >
-              Continue with Google
+            <Button variant="secondary" onClick={signInWithGoogle}>
+              <span className="flex items-center justify-center gap-2">
+                <GoogleIcon />
+                Continue with Google
+              </span>
             </Button>
 
             <p className="text-center text-gray-600">

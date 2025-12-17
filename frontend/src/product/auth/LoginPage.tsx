@@ -5,11 +5,19 @@ import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import { Link } from "react-router-dom";
+import GoogleIcon from "../../components/ui/icons/GoogleIcon";
 
 export default function LoginPage() {
-  const { signIn, signInWithGoogle, error } = useAuth(); // ⭐ FIXED: added signInWithGoogle
+  const {
+    signIn,
+    signInWithGoogle,
+    resetPassword,
+    error,
+  } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [resetSent, setResetSent] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center px-4">
@@ -32,16 +40,36 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
+          {/* Forgot password */}
+          <button
+            type="button"
+            onClick={async () => {
+              const ok = await resetPassword(email);
+              if (ok) setResetSent(true);
+            }}
+            className="text-sm text-blue-600 hover:underline self-end"
+          >
+            Forgot password?
+          </button>
+
           <Button onClick={() => signIn(email, password)}>
             Login
           </Button>
 
-          <Button
-            variant="secondary"
-            onClick={signInWithGoogle}
-          >
-            Continue with Google
+          <Button variant="secondary" onClick={signInWithGoogle}>
+            <span className="flex items-center justify-center gap-2">
+              <GoogleIcon />
+              Continue with Google
+            </span>
           </Button>
+
+          {resetSent && (
+            <p className="text-green-600 text-sm text-center">
+              Password reset email sent. Check your inbox.
+            </p>
+          )}
+
+          {error && <p className="text-red-600 mt-2 text-sm">{error}</p>}
 
           <p className="text-center text-gray-600">
             Don't have an account?{" "}
@@ -49,8 +77,6 @@ export default function LoginPage() {
               Register
             </Link>
           </p>
-
-          {error && <p className="text-red-600 mt-2">{error}</p>}
         </div>
       </Card>
     </div>
