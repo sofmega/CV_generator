@@ -9,6 +9,7 @@ import AuthCallback from "./product/auth/AuthCallback";
 import PricingPage from "./product/pricing/PricingPage";
 import PaymentSuccess from "./product/pricing/PaymentSuccess";
 import AccountPage from "./product/account/AccountPage";
+import ResetPasswordPage from "./product/auth/ResetPasswordPage";
 
 
 export default function App() {
@@ -25,6 +26,8 @@ export default function App() {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/account" element={<AccountPage />} />
+          <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+
 
 
           
