@@ -10,23 +10,30 @@ export function useAuth() {
   const navigate = useNavigate();
 
   // -----------------------
-  // Register user (REQUIRES full name)
+  // Register user (fullName OPTIONAL)
   // -----------------------
-  async function signUp(fullName: string, email: string, password: string) {
+  async function signUp(email: string, password: string, fullName?: string) {
     setError(null);
 
-    if (!fullName?.trim()) {
-      setError("Please enter your full name.");
+    const cleanEmail = email?.trim();
+    const cleanName = fullName?.trim();
+
+    if (!cleanEmail) {
+      setError("Please enter your email.");
+      return false;
+    }
+
+    if (!password) {
+      setError("Please enter your password.");
       return false;
     }
 
     const { error } = await supabase.auth.signUp({
-      email,
+      email: cleanEmail,
       password,
       options: {
-        data: {
-          full_name: fullName.trim(), 
-        },
+        // only attach metadata if name exists
+        data: cleanName ? { full_name: cleanName } : undefined,
         emailRedirectTo: `${window.location.origin}/login`,
       },
     });
@@ -45,8 +52,19 @@ export function useAuth() {
   async function signIn(email: string, password: string) {
     setError(null);
 
+    const cleanEmail = email?.trim();
+    if (!cleanEmail) {
+      setError("Please enter your email.");
+      return false;
+    }
+
+    if (!password) {
+      setError("Please enter your password.");
+      return false;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: cleanEmail,
       password,
     });
 
@@ -81,12 +99,13 @@ export function useAuth() {
   async function resetPassword(email: string) {
     setError(null);
 
-    if (!email?.trim()) {
+    const cleanEmail = email?.trim();
+    if (!cleanEmail) {
       setError("Please enter your email first.");
       return false;
     }
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+    const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
 
@@ -109,7 +128,7 @@ export function useAuth() {
   return {
     user,
     signIn,
-    signUp, 
+    signUp,
     signOut,
     signInWithGoogle,
     resetPassword,
