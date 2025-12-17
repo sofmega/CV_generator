@@ -8,10 +8,11 @@ import { PLANS } from "../config/plans.js";
 export async function usageLimiter(req, res, next) {
   const userId = req.user.id;
 
+  // Fetch full subscription state (we added subscription_status)
   const { data: profile, error } = await supabase
     .from("profiles")
     .select(
-      "plan, generations_used, generation_limit, usage_reset_at"
+      "plan, subscription_status, generations_used, generation_limit, usage_reset_at"
     )
     .eq("user_id", userId)
     .single();
@@ -21,6 +22,23 @@ export async function usageLimiter(req, res, next) {
   }
 
   const now = new Date();
+
+  // ------------------------------------------------
+  // ⭐ 0️⃣ Payment Status Enforcement (CRITICAL FIX)
+  // ------------------------------------------------
+  // If user is on a paid plan but subscription is not ACTIVE:
+  // - Stripe says payment failed / overdue / card declined / canceled
+  // → Treat user as FREE until they update their payment method.
+  if (profile.plan !== "FREE" && profile.subscription_status !== "active") {
+    return res.status(402).json({
+      error: "Your payment could not be processed. Please update your card.",
+      code: "PAYMENT_REQUIRED",
+      subscription_status: profile.subscription_status,
+      plan: profile.plan,
+      info: "Subscription is not active.",
+      upgradeRequired: true,
+    });
+  }
 
   // ------------------------------------------------
   // 1️⃣ Reset quota if needed
