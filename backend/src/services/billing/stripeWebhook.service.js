@@ -1,4 +1,3 @@
-// backend/src/services/billing/stripeWebhook.service.js
 import { supabase } from "../../config/supabase.js";
 import { PLANS } from "../../config/plans.js";
 
@@ -8,24 +7,31 @@ const PRICE_TO_PLAN = {
 };
 
 export async function handleStripeEvent(event) {
-  // 1️⃣ Idempotency check
+
+  // 1️⃣ Idempotency check – OK
   const { data: existing, error: existingErr } = await supabase
-  .from("stripe_events")
-  .select("id")
-  .eq("id", event.id)
-  .maybeSingle();
+    .from("stripe_events")
+    .select("id")
+    .eq("id", event.id)
+    .maybeSingle();
 
-if (existing) return;
+  if (existing) {
+    return;
+  }
 
-const { error: insertErr } = await supabase
-  .from("stripe_events")
-  .insert({ id: event.id });
+  // 2️⃣ Insert event ID – MUST throw on failure
+  const { error: insertErr } = await supabase
+    .from("stripe_events")
+    .insert({ id: event.id });
 
-if (insertErr) return;
+  if (insertErr) {
+    console.error("❌ Failed to insert stripe_events:", insertErr);
+    throw insertErr; // ⭐ CRITICAL FIX – Stripe will retry
+  }
 
-
-  // 2️⃣ Handle events
+  // 3️⃣ Handle event
   switch (event.type) {
+
     case "checkout.session.completed": {
       const session = event.data.object;
       const { userId, priceId } = session.metadata;
@@ -33,7 +39,7 @@ if (insertErr) return;
       const plan = PRICE_TO_PLAN[priceId];
       if (!plan) return;
 
-      await supabase
+      const { error } = await supabase
         .from("profiles")
         .update({
           stripe_customer_id: session.customer,
@@ -46,46 +52,49 @@ if (insertErr) return;
         })
         .eq("user_id", userId);
 
+      if (error) throw error; // ⭐ ensure Stripe retries if DB fails
       break;
     }
 
     case "customer.subscription.updated": {
-  const subscription = event.data.object;
-  const userId = subscription.metadata.userId;
-  if (!userId) return;
+      const subscription = event.data.object;
+      const userId = subscription.metadata.userId;
+      if (!userId) return;
 
-  const priceId = subscription.items.data[0].price.id;
-  const plan = PRICE_TO_PLAN[priceId];
-  if (!plan) return;
+      const priceId = subscription.items.data[0].price.id;
+      const plan = PRICE_TO_PLAN[priceId];
+      if (!plan) return;
 
-  await supabase
-    .from("profiles")
-    .update({
-      plan,
-      generation_limit: PLANS[plan].limit,
-      subscription_status: subscription.status,
-      // ❗ DO NOT touch usage_reset_at here
-    })
-    .eq("user_id", userId);
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          plan,
+          generation_limit: PLANS[plan].limit,
+          subscription_status: subscription.status,
+        })
+        .eq("user_id", userId);
 
-  break;
-}
-
+      if (error) throw error;
+      break;
+    }
 
     case "customer.subscription.deleted": {
       const subscription = event.data.object;
       const userId = subscription.metadata.userId;
       if (!userId) return;
 
-      await supabase
+      const { error } = await supabase
         .from("profiles")
         .update({
           subscription_status: "canceled",
           plan: "FREE",
           generation_limit: PLANS.FREE.limit,
+          generations_used: 0, // ⭐ recommended add
+          usage_reset_at: getNextResetDate("FREE"),
         })
         .eq("user_id", userId);
 
+      if (error) throw error;
       break;
     }
   }
