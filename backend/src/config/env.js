@@ -14,6 +14,9 @@ export const env = cleanEnv(process.env, {
   STRIPE_SECRET_KEY: str(),
   STRIPE_WEBHOOK_SECRET: str(),
 
+  STRIPE_PRICE_STARTER: str(),
+  STRIPE_PRICE_PRO: str(),
+
   FRONTEND_URL: url(),
 });
 
@@ -32,6 +35,8 @@ export const config = {
   stripe: {
     secretKey: env.STRIPE_SECRET_KEY,
     webhookSecret: env.STRIPE_WEBHOOK_SECRET,
+    starterPrice: env.STRIPE_PRICE_STARTER,
+    proPrice: env.STRIPE_PRICE_PRO,
   },
   frontend: {
     url: env.FRONTEND_URL,

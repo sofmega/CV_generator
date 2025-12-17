@@ -1,9 +1,11 @@
+// backend/src/services/billing/stripeWebhook.service.js
 import { supabase } from "../../config/supabase.js";
 import { PLANS } from "../../config/plans.js";
+import { env } from "../../config/env.js";
 
 const PRICE_TO_PLAN = {
-  price_1Sc6euLPQul2TqUGUBDjs9de: "STARTER",
-  price_1Sc6fcLPQul2TqUGKIlyWCGN: "PRO",
+  [env.STRIPE_PRICE_STARTER]: "STARTER",
+  [env.STRIPE_PRICE_PRO]: "PRO",
 };
 
 export async function handleStripeEvent(event) {
@@ -89,7 +91,7 @@ export async function handleStripeEvent(event) {
           subscription_status: "canceled",
           plan: "FREE",
           generation_limit: PLANS.FREE.limit,
-          generations_used: 0, // ⭐ recommended add
+          generations_used: 0, 
           usage_reset_at: getNextResetDate("FREE"),
         })
         .eq("user_id", userId);
