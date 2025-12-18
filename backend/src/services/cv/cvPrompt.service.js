@@ -23,12 +23,6 @@ FORMAT:
 4. Expériences Professionnelles
 5. Formation
 
-Candidate:
-Soufiane Radouane
-Asnières-sur-Seine, France
-soufiane.radouane99@gmail.com
-07 45 76 79 13
-
 Date: ${today}
 
 Job Offer:
@@ -40,5 +34,3 @@ ${safeCv}
 Now rewrite an improved CV following the rules above.
   `;
 }
-
-

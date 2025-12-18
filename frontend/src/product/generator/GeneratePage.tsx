@@ -57,7 +57,7 @@ export function GeneratePage() {
           <input
             id="cv-upload"
             type="file"
-            accept=".pdf,.doc,.docx,.txt"
+            accept=".pdf,.docx,.txt"
             onChange={handleCVUpload}
             className="hidden"
           />

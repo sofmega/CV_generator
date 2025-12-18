@@ -4,7 +4,6 @@ import multer from "multer";
 // MIME types
 const allowedMimeTypes = new Set([
   "application/pdf",
-  "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   "text/plain",
 ]);
