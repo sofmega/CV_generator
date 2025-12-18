@@ -18,20 +18,21 @@ export const env = cleanEnv(process.env, {
   STRIPE_PRICE_PRO: str(),
 
   FRONTEND_URL: url(),
+  
+  CRON_SECRET: str(),
 });
 
+
+const FRONTEND_ORIGIN = new URL(env.FRONTEND_URL).origin;
+
 export const config = {
-  server: {
-    port: env.PORT,
-  },
+  server: { port: env.PORT },
   supabase: {
     url: env.SUPABASE_URL,
     anonKey: env.SUPABASE_ANON_KEY,
     serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
   },
-  openai: {
-    apiKey: env.OPENAI_API_KEY,
-  },
+  openai: { apiKey: env.OPENAI_API_KEY },
   stripe: {
     secretKey: env.STRIPE_SECRET_KEY,
     webhookSecret: env.STRIPE_WEBHOOK_SECRET,
@@ -40,5 +41,6 @@ export const config = {
   },
   frontend: {
     url: env.FRONTEND_URL,
+    origin: FRONTEND_ORIGIN,
   },
 };
