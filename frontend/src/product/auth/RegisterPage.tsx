@@ -16,7 +16,7 @@ export default function RegisterPage() {
   const [registered, setRegistered] = useState(false);
 
   async function handleRegister() {
-    const success = await signUp(fullName, email, password);
+    const success = await signUp(email, password, fullName);
     if (success) setRegistered(true);
   }
 
