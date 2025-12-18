@@ -22,13 +22,13 @@ export default function PricingPage() {
       name: "Starter",
       price: "9€ / month",
       description: "50 AI generations per month",
-      stripePriceId: "price_1Sc6euLPQul2TqUGUBDjs9de",
+      stripePriceId: import.meta.env.VITE_STRIPE_PRICE_STARTER,
     },
     {
       name: "Pro",
       price: "29€ / month",
       description: "Unlimited or 200+ generations per month",
-      stripePriceId: "price_1Sc6fcLPQul2TqUGKIlyWCGN",
+      stripePriceId: import.meta.env.VITE_STRIPE_PRICE_PRO,
     },
   ];
 
