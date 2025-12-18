@@ -1,5 +1,5 @@
 // frontend/src/product/account/AccountPage.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
@@ -18,10 +18,11 @@ export default function AccountPage() {
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
 
+  useEffect(() => {
   if (!loading && !user) {
     navigate("/login");
-    return null;
   }
+}, [loading, user, navigate]);
 
   if (loading || !user) {
     return (
@@ -151,4 +152,3 @@ export default function AccountPage() {
     </div>
   );
 }
-    
