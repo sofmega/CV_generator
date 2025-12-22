@@ -7,19 +7,43 @@ export default function AuthCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    let mounted = true;
+
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (!mounted) return;
+
+      if (error) {
+        console.error("Auth callback error:", error);
+        navigate("/login");
+        return;
+      }
+
       if (data.session) {
-        navigate("/"); // success → go to product
+        navigate("/", { replace: true });
       } else {
-        navigate("/login"); // error → go back to login
+        // Wait for auth state change (OAuth hydration)
+        const { data: listener } = supabase.auth.onAuthStateChange(
+          (_event, session) => {
+            if (session) {
+              navigate("/", { replace: true });
+            } else {
+              navigate("/login", { replace: true });
+            }
+          }
+        );
+
+        return () => listener.subscription.unsubscribe();
       }
     });
-  }, []);
+
+    return () => {
+      mounted = false;
+    };
+  }, [navigate]);
 
   return (
     <div className="text-center p-10 text-gray-600">
-      Signing you in with Google...
+      Signing you in…
     </div>
   );
 }
-
