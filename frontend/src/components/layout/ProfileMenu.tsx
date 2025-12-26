@@ -40,7 +40,10 @@ export default function ProfileMenu() {
 
   const email = user.email ?? "";
   const initials = email.slice(0, 2).toUpperCase();
-  const avatarUrl = user.user_metadata?.avatar_url;
+  const avatarUrl =
+  user.user_metadata?.avatar_url ||
+  user.user_metadata?.picture ||
+  user.user_metadata?.avatar;
 
   return (
     <div
@@ -50,7 +53,7 @@ export default function ProfileMenu() {
     >
       <button
         type="button"
-        className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold"
+        className="w-9 h-9 rounded-full overflow-hidden bg-gray-200 text-white flex items-center justify-center font-semibold"
         onFocus={openMenu}
         onBlur={closeMenuWithDelay}
         aria-haspopup="menu"
@@ -58,10 +61,12 @@ export default function ProfileMenu() {
       >
         {avatarUrl ? (
           <img
-            src={avatarUrl}
-            alt="avatar"
-            className="w-full h-full rounded-full object-cover"
-          />
+  src={avatarUrl}
+  alt="avatar"
+  className="block w-full h-full object-cover"
+  referrerPolicy="no-referrer"
+/>
+
         ) : (
           initials
         )}
