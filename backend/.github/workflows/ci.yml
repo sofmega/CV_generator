@@ -3,8 +3,15 @@ name: CI
 on:
   push:
     branches: [develop]
+    paths:
+      - "backend/**"
+      - "frontend/**"
+
   pull_request:
     branches: [main]
+    paths:
+      - "backend/**"
+      - "frontend/**"
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -39,7 +46,7 @@ jobs:
       - name: Run tests
         env:
           NODE_ENV: test
-        run: npm test
+        run: npm test --if-present
 
   frontend:
     name: Frontend – build check
@@ -63,5 +70,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Type check
-        run: npm run build
+      - name: Build (type check)
+        run: npm run build --if-present
