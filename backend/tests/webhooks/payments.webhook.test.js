@@ -1,6 +1,5 @@
-// backend/tests/webhooks/payments.webhook.test.js
 import request from "supertest";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 import { mockLogger } from "../test-utils/mockLogger.js";
 import { mockStripe, mockCreateSession } from "../test-utils/mockStripe.js";
 
@@ -16,16 +15,6 @@ vi.mock("../../src/middleware/auth.js", () => ({
 }));
 
 vi.mock("stripe", () => mockStripe);
-
-vi.mock("../../src/config/supabase.js", () => ({
-  supabase: {
-    from: () => ({
-      update: () => ({
-        eq: () => ({ data: {}, error: null }),
-      }),
-    }),
-  },
-}));
 
 let app;
 beforeAll(async () => {
@@ -52,9 +41,7 @@ describe("POST /payments/create-checkout-session", () => {
   it("should return Stripe session URL on success", async () => {
     const res = await request(app)
       .post("/payments/create-checkout-session")
-      .send({
-        priceId: "price_1Sc6euLPQul2TqUGUBDjs9de",
-      });
+      .send({ priceId: "price_test_starter" });
 
     expect(res.status).toBe(200);
     expect(res.body.url).toBe("https://stripe-session-url");
