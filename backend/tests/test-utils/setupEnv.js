@@ -4,12 +4,15 @@ process.env.NODE_ENV = "test";
 process.env.CRON_SECRET = "test-cron-secret";
 process.env.FRONTEND_URL = "https://example.com";
 
+// Supabase (dummy but valid-looking)
 process.env.SUPABASE_URL = "https://test.supabase.co";
 process.env.SUPABASE_ANON_KEY = "test-anon";
 process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role";
 
+// OpenAI (dummy)
 process.env.OPENAI_API_KEY = "test-openai";
 
+// Stripe (dummy)
 process.env.STRIPE_SECRET_KEY = "sk_test_123";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec_test_123";
 process.env.STRIPE_PRICE_STARTER = "price_test_starter";
