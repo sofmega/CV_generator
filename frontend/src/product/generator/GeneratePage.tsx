@@ -2,6 +2,7 @@ import Card from "../../components/ui/Card";
 import Textarea from "../../components/ui/Textarea";
 import Button from "../../components/ui/Button";
 import { useGenerator } from "../../hooks/useGenerator";
+import PdfViewer from "../../components/ui/pdf/PdfViewer";
 
 function Stepper({ step }: { step: number }) {
   return (
@@ -251,32 +252,30 @@ export function GeneratePage() {
 
               {/* PDF RESULT (✅ preview before download) */}
               {generatedPdfBlob && pdfPreviewUrl && (
-                <>
-                  <div className="border rounded-2xl overflow-hidden bg-white">
-                    <div className="p-4 border-b bg-gray-50 flex items-center justify-between">
-                      <div className="text-sm text-gray-700 font-medium">
-                        PDF preview
-                      </div>
-                      <Button
-                        onClick={() =>
-                          downloadPdf(lastType === "cv-pdf" ? "CV.pdf" : "Cover_Letter.pdf")
-                        }
-                        className="px-4 py-2"
-                      >
-                        Download PDF
-                      </Button>
-                    </div>
+  <>
+    <div className="border rounded-2xl overflow-hidden bg-white">
+      <div className="p-4 border-b bg-gray-50 flex items-center justify-between">
+        <div className="text-sm text-gray-700 font-medium">
+          PDF preview
+        </div>
 
-                    <div className="h-[560px] w-full">
-                      <iframe
-                        title="PDF preview"
-                        src={pdfPreviewUrl}
-                        className="w-full h-full"
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
+        <Button
+          onClick={() =>
+            downloadPdf(lastType === "cv-pdf" ? "CV.pdf" : "Cover_Letter.pdf")
+          }
+          className="px-4 py-2"
+        >
+          Download PDF
+        </Button>
+      </div>
+
+      <div className="p-4">
+        <PdfViewer url={pdfPreviewUrl} />
+      </div>
+    </div>
+  </>
+)}
+
 
               {!generatedText && !generatedPdfBlob && (
                 <p className="text-gray-600">No output to display.</p>
