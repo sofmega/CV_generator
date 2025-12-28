@@ -1,3 +1,4 @@
+// frontend/src/hooks/useGenerator.ts
 import { useState } from "react";
 import type { ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";

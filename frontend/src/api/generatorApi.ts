@@ -1,3 +1,4 @@
+// frontend/src/api/generatorApi.ts
 import { API_BASE_URL, getJWT, request, getAuthHeaders } from "../lib/api";
 import type { GenerateType } from "../product/generator/types";
 
