@@ -10,12 +10,15 @@ import PricingPage from "./product/pricing/PricingPage";
 import PaymentSuccess from "./product/pricing/PaymentSuccess";
 import AccountPage from "./product/account/AccountPage";
 import ResetPasswordPage from "./product/auth/ResetPasswordPage";
+import FeedbackPage from "./product/account/FeedbackPage";
+import FeedbackFloatingButton from "./components/ui/FeedbackFloatingButton.tsx";
 
 
 export default function App() {
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
+      <FeedbackFloatingButton />
 
       <main className="pt-10">
         <Routes>
@@ -27,6 +30,9 @@ export default function App() {
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
+          
+
 
 
 
