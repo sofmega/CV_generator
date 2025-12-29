@@ -20,7 +20,7 @@ export default function App() {
       <Header />
       <FeedbackFloatingButton />
 
-      <main className="pt-10">
+      <main >
         <Routes>
           <Route path="/" element={<GeneratePage />} />
           <Route path="/login" element={<LoginPage />} />
