@@ -16,7 +16,7 @@ export default function Step1Upload({ onUpload, error }: Step1UploadProps) {
         <p className="text-gray-700 mb-2">Drop your resume here or choose a file.</p>
 
         <p className="text-sm text-gray-500 mb-6">
-          PDF, DOCX or TXT. (Backend limit may apply)
+          PDF, DOCX or TXT. 
         </p>
 
         <input
