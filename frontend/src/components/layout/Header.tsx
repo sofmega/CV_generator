@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <header className="w-full bg-white border-b h-16 flex items-center justify-between px-6 shadow-sm">
       <div className="text-xl font-semibold text-gray-800">
-        <Link to="/">CVPRO AI</Link>
+        <Link to="/">JOB INCUBATEUR</Link>
       </div>
 
       <div className="flex items-center gap-6">

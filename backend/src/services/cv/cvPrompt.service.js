@@ -1,36 +1,110 @@
 // backend/src/services/cv/cvPrompt.service.js
 export function createCVPrompt(jobDescription, cvText) {
-  const safeCv = cvText || "(aucun CV fourni)";
+  const safeCv = cvText || "(no CV provided)";
   const today = new Date().toLocaleDateString("fr-FR");
 
   return `
-You are an expert HR CV writer.
-Generate a clean, professional CV in French.
+You are an expert HR CV writer and ATS optimization specialist.
 
-RULES:
-- NO markdown (no *, **, ###)
-- NO code blocks
-- Use simple plain text only
-- Use clean formatting with blank lines
-- Remove any placeholders like [Company], [Date], etc.
-- Do NOT talk to the user ("here is your CV")
-- Output ONLY the CV
+=====================
+CRITICAL LANGUAGE RULE
+=====================
+- Detect the language of the JOB OFFER.
+- If the job offer language is clear → write all generated text fields in that language.
+- If job offer language is unclear → use the CV language.
+- NEVER mix languages.
 
-FORMAT:
-1. Personal Info
-2. Profil
-3. Compétences Techniques
-4. Expériences Professionnelles
-5. Formation
+=====================
+STRICT RULES — MUST FOLLOW ALL
+=====================
+1. OUTPUT MUST BE VALID JSON ONLY. No extra text before or after.
+2. No markdown, no code blocks, no comments.
+3. DO NOT invent information (companies, dates, degrees, tools, metrics).
+4. Use ONLY information explicitly present in the candidate CV text.
+5. Job offer is used ONLY to:
+   - prioritize relevant existing skills/experience
+   - choose the most relevant wording
+   - reorder content
+   DO NOT add skills not present in the CV.
+6. If a field is missing in the CV, use empty string "" or empty array [] (never placeholders).
+7. Remove any placeholders like [Company], [Date], etc. Do not output brackets.
+8. Keep content concise and one-page oriented:
+   - Summary: 2–4 lines maximum
+   - Experience bullets: 3–6 bullets per role
+   - Each bullet: one line, action + impact when present in CV
+9. Dates: keep exactly as found in CV. If unclear, leave empty "".
+10. Links: include only if explicitly found in CV.
 
-Date: ${today}
+=====================
+REQUIRED JSON SCHEMA (MUST MATCH EXACTLY)
+=====================
+{
+  "personalInfo": {
+    "fullName": "",
+    "title": "",
+    "location": "",
+    "email": "",
+    "phone": "",
+    "links": {
+      "linkedin": "",
+      "github": "",
+      "portfolio": ""
+    }
+  },
+  "summary": "",
+  "skills": {
+    "technical": [],
+    "soft": [],
+    "languages": []
+  },
+  "experience": [
+    {
+      "title": "",
+      "company": "",
+      "location": "",
+      "startDate": "",
+      "endDate": "",
+      "bullets": []
+    }
+  ],
+  "education": [
+    {
+      "degree": "",
+      "school": "",
+      "location": "",
+      "startDate": "",
+      "endDate": "",
+      "details": []
+    }
+  ],
+  "projects": [
+    {
+      "name": "",
+      "description": "",
+      "technologies": []
+    }
+  ],
+  "extra": {
+    "certifications": [],
+    "interests": []
+  }
+}
 
-Job Offer:
+=====================
+CONTEXT
+=====================
+
+Today: ${today}
+
+Job Offer (for prioritization only):
 ${jobDescription}
 
-Candidate CV data:
+Candidate CV text (source of truth):
 ${safeCv}
 
-Now rewrite an improved CV following the rules above.
-  `;
+=====================
+FINAL INSTRUCTION
+=====================
+Return ONLY the JSON object matching the schema exactly.
+`;
 }
