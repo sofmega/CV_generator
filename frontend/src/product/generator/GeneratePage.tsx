@@ -2,6 +2,8 @@
 import Card from "../../components/ui/Card";
 import { useGenerator } from "../../hooks/useGenerator";
 
+
+
 import Stepper from "./components/Stepper";
 import Step1Upload from "./components/Step1Upload";
 import Step2Uploading from "./components/Step2Uploading";
@@ -45,7 +47,7 @@ export function GeneratePage() {
             GENERATE AS MANY DOCUMENTS AS YOU NEED
           </p>
           <h1 className="text-4xl font-black text-gray-900 mt-2">
-            Free AI Cover Letter Generator
+            Free AI Cover Letter Generator / CV Generator
           </h1>
         </div>
 

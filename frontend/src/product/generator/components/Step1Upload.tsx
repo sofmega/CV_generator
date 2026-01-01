@@ -36,7 +36,7 @@ export default function Step1Upload({ onUpload, error }: Step1UploadProps) {
 
         <div className="mt-6 text-sm text-gray-500 flex items-center justify-center gap-2">
           <span>🔒</span>
-          <span>We will never share your data with 3rd parties or use it for AI training.</span>
+          <span>All submitted data is deleted automatically after completion.</span>
         </div>
       </div>
 
