@@ -44,8 +44,8 @@ export default function Step3JobOffer({
         </Button>
 
         <Button
-          onClick={() => onGenerate("cv")}
-          loading={isLoading && lastType === "cv"}
+          onClick={() => onGenerate("cv-pdf")}
+          loading={isLoading && lastType === "cv-pdf"}
         >
           Generate CV
         </Button>
