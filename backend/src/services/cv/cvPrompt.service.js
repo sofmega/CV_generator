@@ -19,7 +19,7 @@ STRICT RULES — MUST FOLLOW ALL
 =====================
 1. OUTPUT MUST BE VALID JSON ONLY. No extra text before or after.
 2. No markdown, no code blocks, no comments.
-3. DO NOT invent information (companies, dates, degrees, tools, metrics).
+3. DO NOT invent information (companies, dates, degrees, tools, metrics, links).
 4. Use ONLY information explicitly present in the candidate CV text.
 5. Job offer is used ONLY to:
    - prioritize relevant existing skills/experience
@@ -31,14 +31,38 @@ STRICT RULES — MUST FOLLOW ALL
 8. Keep content concise and one-page oriented:
    - Summary: 2–4 lines maximum
    - Experience bullets: 3–6 bullets per role
-   - Each bullet: one line, action + impact when present in CV
+   - Each bullet: one line, action + impact only if present in CV
 9. Dates: keep exactly as found in CV. If unclear, leave empty "".
 10. Links: include only if explicitly found in CV.
+
+=====================
+LABELS REQUIREMENT (IMPORTANT)
+=====================
+- Fill meta.language with a short language code (examples: "en", "fr", "es", "de", "ar").
+- Fill meta.labels with correct professional CV section titles in the detected language.
+- Do NOT translate content from another language; write everything consistently in the detected language.
 
 =====================
 REQUIRED JSON SCHEMA (MUST MATCH EXACTLY)
 =====================
 {
+  "meta": {
+    "language": "",
+    "labels": {
+      "profile": "",
+      "skills": "",
+      "experience": "",
+      "education": "",
+      "projects": "",
+      "other": "",
+      "technicalSkills": "",
+      "softSkills": "",
+      "languages": "",
+      "certifications": "",
+      "interests": "",
+      "technologiesPrefix": ""
+    }
+  },
   "personalInfo": {
     "fullName": "",
     "title": "",
