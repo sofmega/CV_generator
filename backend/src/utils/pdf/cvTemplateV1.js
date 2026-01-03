@@ -129,13 +129,15 @@ export function generateCVPdfFromData(cvDataRaw) {
 
   const gap = 12;
   const sidebarW = 190;
-  const contentW = PAGE_W - doc.page.margins.left - doc.page.margins.right - sidebarW - gap;
+  const contentW =
+    PAGE_W - doc.page.margins.left - doc.page.margins.right - sidebarW - gap;
 
   const sidebarX = doc.page.margins.left;
   const contentX = sidebarX + sidebarW + gap;
   const topY = doc.page.margins.top;
 
-  const toLine = (arr) => (Array.isArray(arr) ? arr.filter(Boolean).join(" • ") : "");
+  const toLine = (arr) =>
+    Array.isArray(arr) ? arr.filter(Boolean).join(" • ") : "";
 
   // ===== HELPERS =====
   function sectionTitle(x, y, w, text) {
@@ -176,7 +178,11 @@ export function generateCVPdfFromData(cvDataRaw) {
   function keyValue(x, y, w, label, value, link) {
     const v = sanitizeText(value);
     if (!v) return y;
-    doc.font("Helvetica-Bold").fontSize(9).fillColor(MUTED).text(label, x, y, { width: w });
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(9)
+      .fillColor(MUTED)
+      .text(label, x, y, { width: w });
     doc.font("Helvetica").fontSize(9.5).fillColor(TEXT);
     if (link) doc.text(v, x, doc.y + 2, { width: w, link });
     else doc.text(v, x, doc.y + 2, { width: w });
@@ -193,11 +199,10 @@ export function generateCVPdfFromData(cvDataRaw) {
     }
   }
 
-  function drawSidebarBackground() {
+  // ✅ OPTION A CHANGE: allow height
+  function drawSidebarBackground(h = PAGE_H) {
     doc.save();
-    doc
-      .rect(sidebarX, 0, sidebarW, PAGE_H)
-      .fill(SIDEBAR_BG);
+    doc.rect(sidebarX, 0, sidebarW, h).fill(SIDEBAR_BG);
     doc.restore();
   }
 
@@ -207,11 +212,19 @@ export function generateCVPdfFromData(cvDataRaw) {
   // ===== HEADER (RIGHT) =====
   let yR = topY;
 
-  doc.font("Helvetica-Bold").fontSize(22).fillColor(TEXT).text(fullName || "", contentX, yR, { width: contentW });
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(22)
+    .fillColor(TEXT)
+    .text(fullName || "", contentX, yR, { width: contentW });
   yR = doc.y + 2;
 
   if (title) {
-    doc.font("Helvetica").fontSize(12).fillColor(MUTED).text(title, contentX, yR, { width: contentW });
+    doc
+      .font("Helvetica")
+      .fontSize(12)
+      .fillColor(MUTED)
+      .text(title, contentX, yR, { width: contentW });
     yR = doc.y + 10;
   } else {
     yR += 8;
@@ -229,13 +242,38 @@ export function generateCVPdfFromData(cvDataRaw) {
   // Contact block
   yL = sectionTitle(sidebarX + 14, yL, sidebarW - 28, "Contact");
   yL = keyValue(sidebarX + 14, yL, sidebarW - 28, "Localisation", location);
-  yL = keyValue(sidebarX + 14, yL, sidebarW - 28, "Email", email, email ? `mailto:${email}` : "");
+  yL = keyValue(
+    sidebarX + 14,
+    yL,
+    sidebarW - 28,
+    "Email",
+    email,
+    email ? `mailto:${email}` : ""
+  );
   yL = keyValue(sidebarX + 14, yL, sidebarW - 28, "Téléphone", phone);
 
   // Links as clickable
-  yL = keyValue(sidebarX + 14, yL, sidebarW - 28, "LinkedIn", linkedin, linkedin ? (linkedin.startsWith("http") ? linkedin : `https://www.linkedin.com${linkedin}`) : "");
+  yL = keyValue(
+    sidebarX + 14,
+    yL,
+    sidebarW - 28,
+    "LinkedIn",
+    linkedin,
+    linkedin
+      ? linkedin.startsWith("http")
+        ? linkedin
+        : `https://www.linkedin.com${linkedin}`
+      : ""
+  );
   yL = keyValue(sidebarX + 14, yL, sidebarW - 28, "GitHub", github, github);
-  yL = keyValue(sidebarX + 14, yL, sidebarW - 28, "Portfolio", portfolio, portfolio);
+  yL = keyValue(
+    sidebarX + 14,
+    yL,
+    sidebarW - 28,
+    "Portfolio",
+    portfolio,
+    portfolio
+  );
 
   // Skills block
   const { technical = [], soft = [], languages = [] } = skills || {};
@@ -244,23 +282,51 @@ export function generateCVPdfFromData(cvDataRaw) {
     yL = sectionTitle(sidebarX + 14, yL, sidebarW - 28, LABELS.skills);
 
     if (technical.length) {
-      doc.font("Helvetica-Bold").fontSize(9.5).fillColor(TEXT).text(LABELS.technicalSkills, sidebarX + 14, yL, { width: sidebarW - 28 });
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(9.5)
+        .fillColor(TEXT)
+        .text(LABELS.technicalSkills, sidebarX + 14, yL, {
+          width: sidebarW - 28,
+        });
       yL = doc.y + 4;
-      doc.font("Helvetica").fontSize(9).fillColor(TEXT).text(technical.join(", "), sidebarX + 14, yL, { width: sidebarW - 28 });
+      doc
+        .font("Helvetica")
+        .fontSize(9)
+        .fillColor(TEXT)
+        .text(technical.join(", "), sidebarX + 14, yL, {
+          width: sidebarW - 28,
+        });
       yL = doc.y + 10;
     }
 
     if (soft.length) {
-      doc.font("Helvetica-Bold").fontSize(9.5).fillColor(TEXT).text(LABELS.softSkills, sidebarX + 14, yL, { width: sidebarW - 28 });
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(9.5)
+        .fillColor(TEXT)
+        .text(LABELS.softSkills, sidebarX + 14, yL, { width: sidebarW - 28 });
       yL = doc.y + 4;
-      doc.font("Helvetica").fontSize(9).fillColor(TEXT).text(soft.join(", "), sidebarX + 14, yL, { width: sidebarW - 28 });
+      doc
+        .font("Helvetica")
+        .fontSize(9)
+        .fillColor(TEXT)
+        .text(soft.join(", "), sidebarX + 14, yL, { width: sidebarW - 28 });
       yL = doc.y + 10;
     }
 
     if (languages.length) {
-      doc.font("Helvetica-Bold").fontSize(9.5).fillColor(TEXT).text(LABELS.languages, sidebarX + 14, yL, { width: sidebarW - 28 });
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(9.5)
+        .fillColor(TEXT)
+        .text(LABELS.languages, sidebarX + 14, yL, { width: sidebarW - 28 });
       yL = doc.y + 4;
-      doc.font("Helvetica").fontSize(9).fillColor(TEXT).text(toLine(languages), sidebarX + 14, yL, { width: sidebarW - 28 });
+      doc
+        .font("Helvetica")
+        .fontSize(9)
+        .fillColor(TEXT)
+        .text(toLine(languages), sidebarX + 14, yL, { width: sidebarW - 28 });
       yL = doc.y + 10;
     }
   }
@@ -272,16 +338,30 @@ export function generateCVPdfFromData(cvDataRaw) {
     yL = sectionTitle(sidebarX + 14, yL, sidebarW - 28, LABELS.other);
 
     if (certifications.length) {
-      doc.font("Helvetica-Bold").fontSize(9.5).fillColor(TEXT).text(LABELS.certifications, sidebarX + 14, yL, { width: sidebarW - 28 });
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(9.5)
+        .fillColor(TEXT)
+        .text(LABELS.certifications, sidebarX + 14, yL, {
+          width: sidebarW - 28,
+        });
       yL = doc.y + 6;
       yL = bulletList(sidebarX + 14, yL, sidebarW - 28, certifications);
       yL += 6;
     }
 
     if (interests.length) {
-      doc.font("Helvetica-Bold").fontSize(9.5).fillColor(TEXT).text(LABELS.interests, sidebarX + 14, yL, { width: sidebarW - 28 });
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(9.5)
+        .fillColor(TEXT)
+        .text(LABELS.interests, sidebarX + 14, yL, { width: sidebarW - 28 });
       yL = doc.y + 4;
-      doc.font("Helvetica").fontSize(9).fillColor(TEXT).text(toLine(interests), sidebarX + 14, yL, { width: sidebarW - 28 });
+      doc
+        .font("Helvetica")
+        .fontSize(9)
+        .fillColor(TEXT)
+        .text(toLine(interests), sidebarX + 14, yL, { width: sidebarW - 28 });
       yL = doc.y + 8;
     }
   }
@@ -294,7 +374,11 @@ export function generateCVPdfFromData(cvDataRaw) {
     ensureSpace(60);
     let y = doc.y;
     y = sectionTitle(contentX, y, contentW, LABELS.profile);
-    doc.font("Helvetica").fontSize(10).fillColor(TEXT).text(summary, contentX, y, { width: contentW });
+    doc
+      .font("Helvetica")
+      .fontSize(10)
+      .fillColor(TEXT)
+      .text(summary, contentX, y, { width: contentW });
     doc.y = doc.y + 8;
   }
 
@@ -308,11 +392,20 @@ export function generateCVPdfFromData(cvDataRaw) {
       ensureSpace(70);
 
       const line1 = [exp.title, exp.company].filter(Boolean).join(" — ");
-      doc.font("Helvetica-Bold").fontSize(10).fillColor(TEXT).text(line1, contentX, y, { width: contentW });
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(10)
+        .fillColor(TEXT)
+        .text(line1, contentX, y, { width: contentW });
 
       const dates = [exp.startDate, exp.endDate].filter(Boolean).join(" - ");
       const line2 = [exp.location, dates].filter(Boolean).join("  •  ");
-      if (line2) doc.font("Helvetica").fontSize(9).fillColor(MUTED).text(line2, contentX, doc.y + 2, { width: contentW });
+      if (line2)
+        doc
+          .font("Helvetica")
+          .fontSize(9)
+          .fillColor(MUTED)
+          .text(line2, contentX, doc.y + 2, { width: contentW });
 
       y = doc.y + 6;
       y = bulletList(contentX, y, contentW, exp.bullets);
@@ -331,11 +424,20 @@ export function generateCVPdfFromData(cvDataRaw) {
       ensureSpace(50);
 
       const line1 = [ed.degree, ed.school].filter(Boolean).join(" — ");
-      doc.font("Helvetica-Bold").fontSize(10).fillColor(TEXT).text(line1, contentX, y, { width: contentW });
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(10)
+        .fillColor(TEXT)
+        .text(line1, contentX, y, { width: contentW });
 
       const dates = [ed.startDate, ed.endDate].filter(Boolean).join(" - ");
       const line2 = [ed.location, dates].filter(Boolean).join("  •  ");
-      if (line2) doc.font("Helvetica").fontSize(9).fillColor(MUTED).text(line2, contentX, doc.y + 2, { width: contentW });
+      if (line2)
+        doc
+          .font("Helvetica")
+          .fontSize(9)
+          .fillColor(MUTED)
+          .text(line2, contentX, doc.y + 2, { width: contentW });
 
       y = doc.y + 6;
       y = bulletList(contentX, y, contentW, ed.details);
@@ -353,17 +455,45 @@ export function generateCVPdfFromData(cvDataRaw) {
       if (!p) continue;
       ensureSpace(50);
 
-      if (p.name) doc.font("Helvetica-Bold").fontSize(10).fillColor(TEXT).text(p.name, contentX, y, { width: contentW });
+      if (p.name)
+        doc
+          .font("Helvetica-Bold")
+          .fontSize(10)
+          .fillColor(TEXT)
+          .text(p.name, contentX, y, { width: contentW });
 
-      if (p.description) doc.font("Helvetica").fontSize(10).fillColor(TEXT).text(p.description, contentX, doc.y + 2, { width: contentW });
+      if (p.description)
+        doc
+          .font("Helvetica")
+          .fontSize(10)
+          .fillColor(TEXT)
+          .text(p.description, contentX, doc.y + 2, { width: contentW });
 
       if (p.technologies?.length) {
-        doc.font("Helvetica").fontSize(9).fillColor(MUTED).text(`${LABELS.technologiesPrefix} : ${p.technologies.join(", ")}`, contentX, doc.y + 2, { width: contentW });
+        doc
+          .font("Helvetica")
+          .fontSize(9)
+          .fillColor(MUTED)
+          .text(
+            `${LABELS.technologiesPrefix} : ${p.technologies.join(", ")}`,
+            contentX,
+            doc.y + 2,
+            { width: contentW }
+          );
       }
 
       y = doc.y + 10;
     }
     doc.y = y;
+  }
+
+  // ✅ OPTION A CHANGE: remove unused sidebar color below the last content
+  // (works great for 1-page CVs; multi-page will still have full sidebar on previous pages)
+  const lastUsedY = Math.max(yL, doc.y) + 10; // small padding
+  if (lastUsedY < PAGE_H) {
+    doc.save();
+    doc.fillColor("#FFFFFF").rect(sidebarX, lastUsedY, sidebarW, PAGE_H - lastUsedY).fill();
+    doc.restore();
   }
 
   doc.end();
