@@ -1,17 +1,15 @@
-// src/product/generator/components/Step3JobOffer.tsx
 import Textarea from "../../../components/ui/Textarea";
 import Button from "../../../components/ui/Button";
-import type { GenerateType } from "../types";
 
 type Step3JobOfferProps = {
   jobOffer: string;
   setJobOffer: (v: string) => void;
 
   onBack: () => void;
-  onGenerate: (type: GenerateType) => void;
+  onGenerate: () => void;
 
   isLoading: boolean;
-  lastType: GenerateType | null;
+  buttonLabel: string;
   error: string | null;
 };
 
@@ -21,7 +19,7 @@ export default function Step3JobOffer({
   onBack,
   onGenerate,
   isLoading,
-  lastType,
+  buttonLabel,
   error,
 }: Step3JobOfferProps) {
   return (
@@ -43,33 +41,10 @@ export default function Step3JobOffer({
           Back
         </Button>
 
-        <Button
-          onClick={() => onGenerate("cv-pdf")}
-          loading={isLoading && lastType === "cv-pdf"}
-        >
-          Generate CV
-        </Button>
-
-        <Button
-          onClick={() => onGenerate("coverLetter")}
-          loading={isLoading && lastType === "coverLetter"}
-        >
-          Generate Cover Letter
+        <Button onClick={onGenerate} loading={isLoading}>
+          {buttonLabel}
         </Button>
       </div>
-
-      {/* future button (only if backend exists) */}
-      {/* 
-      <div className="mt-3 flex justify-end">
-        <Button
-          variant="secondary"
-          onClick={() => onGenerate("coverLetterText")}
-          loading={isLoading && lastType === "coverLetterText"}
-        >
-          Generate Cover Letter (Text)
-        </Button>
-      </div>
-      */}
 
       {error && <p className="text-red-600 mt-4 font-medium">{error}</p>}
     </div>
