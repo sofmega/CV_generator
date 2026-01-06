@@ -1,3 +1,4 @@
+// frontend/src/product/generator/components/Step1Upload.tsx
 import { useRef, useState } from "react";
 import type React from "react";
 import { useAuthContext } from "../../../hooks/useAuthContext";

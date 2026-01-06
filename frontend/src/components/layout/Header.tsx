@@ -28,12 +28,18 @@ export default function Header() {
 
               <div className="text-sm text-gray-500 hidden sm:block">
                 CV & Cover Letter AI
+                
               </div>
             </div>
           </Link>
+          
+
 
           {/* RIGHT SIDE */}
           <div className="flex items-center gap-3 sm:gap-4">
+            <Link to="/blog" className="text-gray-700 hover:underline">
+  Blog
+</Link>
             <NavLink
               to="/pricing"
               className={({ isActive }) =>

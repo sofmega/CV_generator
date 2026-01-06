@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dr.pogodin/react-helmet": "^3.0.5",
     "@supabase/supabase-js": "^2.86.2",
     "lucide-react": "^0.562.0",
     "pdfjs-dist": "^5.4.449",
@@ -19,6 +20,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@prerenderer/renderer-jsdom": "^1.1.9",
+    "@prerenderer/rollup-plugin": "^0.3.12",
     "@tailwindcss/postcss": "^4.1.17",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",

@@ -2,7 +2,9 @@
 import { Route, Routes } from "react-router-dom";
 import Header from "./components/layout/Header";
 
-import { GeneratePage } from "./product/generator/GeneratePage.tsx";
+import HomePage from "./product/home/HomePage";
+import { GeneratePage } from "./product/generator/GeneratePage";
+
 import LoginPage from "./product/auth/LoginPage";
 import RegisterPage from "./product/auth/RegisterPage";
 import AuthCallback from "./product/auth/AuthCallback";
@@ -10,8 +12,12 @@ import PricingPage from "./product/pricing/PricingPage";
 import PaymentSuccess from "./product/pricing/PaymentSuccess";
 import AccountPage from "./product/account/AccountPage";
 import ResetPasswordPage from "./product/auth/ResetPasswordPage";
+
 import FeedbackPage from "./product/account/FeedbackPage";
-import FeedbackFloatingButton from "./components/ui/FeedbackFloatingButton.tsx";
+import FeedbackFloatingButton from "./components/ui/FeedbackFloatingButton";
+
+import BlogIndexPage from "./product/blog/BlogIndexPage";
+import BlogPostPage from "./product/blog/BlogPostPage";
 
 
 export default function App() {
@@ -20,9 +26,19 @@ export default function App() {
       <Header />
       <FeedbackFloatingButton />
 
-      <main >
+      <main>
         <Routes>
-          <Route path="/" element={<GeneratePage />} />
+          
+          <Route path="/" element={<HomePage />} />
+
+          
+          <Route path="/ai-cv-generator" element={<GeneratePage mode="cv" />} />
+          <Route
+            path="/cover-letter-generator"
+            element={<GeneratePage mode="coverLetter" />}
+          />
+
+          
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
@@ -31,13 +47,12 @@ export default function App() {
           <Route path="/account" element={<AccountPage />} />
           <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
           <Route path="/feedback" element={<FeedbackPage />} />
+          <Route path="/blog" element={<BlogIndexPage />} />
+          <Route path="/blog/:slug" element={<BlogPostPage />} />
+
+
           
-
-
-
-
-          
-
+          <Route path="*" element={<HomePage />} />
         </Routes>
       </main>
     </div>
