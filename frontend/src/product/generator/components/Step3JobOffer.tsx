@@ -1,3 +1,4 @@
+// frontend/src/product/generator/components/Step3JobOffer.tsx  
 import Textarea from "../../../components/ui/Textarea";
 import Button from "../../../components/ui/Button";
 

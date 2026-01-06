@@ -43,6 +43,9 @@ export default function App() {
           <Route path="/account" element={<AccountPage />} />
           <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
           <Route path="/feedback" element={<FeedbackPage />} />
+
+          
+          <Route path="*" element={<HomePage />} />
         </Routes>
       </main>
     </div>
