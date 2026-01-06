@@ -16,6 +16,10 @@ import ResetPasswordPage from "./product/auth/ResetPasswordPage";
 import FeedbackPage from "./product/account/FeedbackPage";
 import FeedbackFloatingButton from "./components/ui/FeedbackFloatingButton";
 
+import BlogIndexPage from "./product/blog/BlogIndexPage";
+import BlogPostPage from "./product/blog/BlogPostPage";
+
+
 export default function App() {
   return (
     <div className="min-h-screen bg-gray-100">
@@ -43,6 +47,9 @@ export default function App() {
           <Route path="/account" element={<AccountPage />} />
           <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
           <Route path="/feedback" element={<FeedbackPage />} />
+          <Route path="/blog" element={<BlogIndexPage />} />
+          <Route path="/blog/:slug" element={<BlogPostPage />} />
+
 
           
           <Route path="*" element={<HomePage />} />

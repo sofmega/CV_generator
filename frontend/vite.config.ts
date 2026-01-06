@@ -16,7 +16,16 @@ export default defineConfig(({ command }) => {
       isBuild &&
         prerender({
           
-          routes: ["/", "/ai-cv-generator", "/cover-letter-generator", "/pricing"],
+          routes: [
+  "/",
+  "/ai-cv-generator",
+  "/cover-letter-generator",
+  "/pricing",
+  "/blog",
+  "/blog/how-to-tailor-your-cv-to-a-job-offer",
+  "/blog/ats-friendly-cv-what-it-is",
+],
+
 
           
           renderer: new PuppeteerRenderer({
