@@ -51,13 +51,13 @@ export function GeneratePage({ mode }: Props) {
           title: "AI CV Generator – Create a Job-Winning Resume in Minutes",
           description:
             "Generate a professional CV tailored to any job offer using AI. Download your CV as a PDF in minutes.",
-          canonical: `${window.location.origin}/ai-cv-generator`,
+          canonical: `${import.meta.env.VITE_SITE_URL}/ai-cv-generator`,
         }
       : {
           title: "AI Cover Letter Generator – Write a Professional Cover Letter with AI",
           description:
             "Generate a personalized cover letter tailored to your job offer using AI. Download a professional PDF instantly.",
-          canonical: `${window.location.origin}/cover-letter-generator`,
+          canonical: `${import.meta.env.VITE_SITE_URL}/cover-letter-generator`,
         };
 
   const title = mode === "cv" ? "Free AI CV Generator" : "Free AI Cover Letter Generator";

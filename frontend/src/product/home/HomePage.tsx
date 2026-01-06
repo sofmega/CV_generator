@@ -5,7 +5,8 @@ import Button from "../../components/ui/Button";
 import { Helmet } from "@dr.pogodin/react-helmet";
 
 export default function HomePage() {
-  const canonical = `${window.location.origin}/`;
+  const canonical = `${import.meta.env.VITE_SITE_URL}/`;
+
 
   return (
     <>
