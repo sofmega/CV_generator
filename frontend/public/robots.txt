@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cv-generator-one-omega.vercel.app/sitemap.xml
+Sitemap: https://www.jobincubateur.com/sitemap.xml
