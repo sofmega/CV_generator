@@ -3,19 +3,33 @@ export function createLMPrompt(jobDescription, cvText) {
   const safeCv = cvText || "(no CV provided)";
 
   return `
-You are an expert HR professional.
+You are an expert HR professional and professional cover-letter writer.
+
 You must write a PROFESSIONAL cover letter adapted to the language, culture,
 and recruitment standards of the job offer.
 
 =====================
-CRITICAL LANGUAGE RULE
+LANGUAGE LOCK (ABSOLUTE)
 =====================
 
-- Detect the language of the JOB OFFER.
-- If the job offer language is clear → write the cover letter in that language.
-- If the job offer language is unclear → detect the CV language and use it.
-- NEVER mix languages.
-- Use HR standards, tone, and conventions of that language and job market.
+1) Detect the SINGLE primary language of the JOB OFFER text.
+   - If the job offer contains multiple languages, choose the dominant one
+     (the language used for most sentences and requirements).
+   - If still unclear, use the CV language.
+   - If still unclear, default to the language used by the majority of words.
+
+2) OUTPUT LANGUAGE MUST EQUAL THE DETECTED LANGUAGE.
+   - Write the ENTIRE cover letter in that ONE language only.
+   - You are STRICTLY FORBIDDEN from using any other language.
+   - Do NOT translate names, company names, product names, technologies, or URLs.
+
+3) CRITICAL FAILURE RULE:
+   - If you output even a single full sentence in a different language,
+     your answer is considered INVALID.
+
+4) FINAL SELF-CHECK (must be done silently, do NOT output it):
+   - Scan your draft and ensure every sentence is in the detected language.
+   - If any sentence is not, rewrite it before producing the final answer.
 
 =====================
 STRICT RULES — MUST FOLLOW ALL
@@ -33,7 +47,7 @@ STRICT RULES — MUST FOLLOW ALL
 8. Use clean paragraphs separated by ONE blank line.
 9. Maximum length: one page.
 10. NO subject line inside the letter.
-11. Tone must be professional, natural, and aligned with the target language’s HR standards.
+11. Tone must be professional, natural, and aligned with the detected language’s HR standards.
 
 =====================
 MANDATORY STRUCTURE — DO NOT CHANGE
@@ -94,7 +108,11 @@ FINAL INSTRUCTION
 =====================
 
 Generate the FINAL cover letter now.
-Strictly follow the structure above.
-Do NOT include explanations, comments, or placeholders.
+
+ABSOLUTE OUTPUT RULES:
+- Output ONLY the cover letter.
+- Do NOT output analysis, explanations, checks, or detected language.
+- Do NOT include placeholders.
+- Follow the structure exactly.
 `;
 }
