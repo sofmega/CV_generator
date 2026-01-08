@@ -7,12 +7,31 @@ export function createCVPrompt(jobDescription, cvText) {
 You are an expert HR CV writer and ATS optimization specialist.
 
 =====================
-CRITICAL LANGUAGE RULE
+LANGUAGE LOCK (ABSOLUTE)
 =====================
-- Detect the language of the JOB OFFER.
-- If the job offer language is clear → write all generated text fields in that language.
-- If job offer language is unclear → use the CV language.
-- NEVER mix languages.
+
+1) Detect the SINGLE primary language of the JOB OFFER text.
+   - If the job offer contains multiple languages, choose the dominant one
+     (the language used for most sentences and requirements).
+   - If still unclear, use the CV language.
+   - If still unclear, default to the language used by the majority of words.
+
+2) OUTPUT LANGUAGE MUST EQUAL THE DETECTED LANGUAGE.
+   - Write ALL generated text fields in that ONE language only.
+   - You are STRICTLY FORBIDDEN from using any other language.
+   - NEVER mix languages.
+
+3) DO NOT translate proper nouns:
+   - Do NOT translate names, company names, product names, technologies, certifications, or URLs.
+   - Keep them exactly as in the CV/job offer.
+
+4) CRITICAL FAILURE RULE:
+   - If you output even a single full sentence in a different language,
+     your answer is INVALID.
+
+5) FINAL SELF-CHECK (must be done silently, do NOT output it):
+   - Verify every sentence in summary + bullets + labels is in the detected language.
+   - If any sentence is not, rewrite it before producing the final JSON.
 
 =====================
 STRICT RULES — MUST FOLLOW ALL
@@ -40,6 +59,7 @@ LABELS REQUIREMENT (IMPORTANT)
 =====================
 - Fill meta.language with a short language code (examples: "en", "fr", "es", "de", "ar").
 - Fill meta.labels with correct professional CV section titles in the detected language.
+- technologiesPrefix must be correct in the detected language (examples: "Technologies:", "Technologies :", "Tecnologías:", "التقنيات:").
 - Do NOT translate content from another language; write everything consistently in the detected language.
 
 =====================
