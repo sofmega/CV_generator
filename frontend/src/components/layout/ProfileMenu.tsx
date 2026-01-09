@@ -116,7 +116,7 @@ export default function ProfileMenu() {
             <p className="text-xs text-gray-500 truncate">{email}</p>
           </div>
 
-          {/* Items */}
+          {/* Itemss */}
           <div className="p-2">
             <button
               onClick={() => go("/account")}
