@@ -1,8 +1,6 @@
 # CVPro - AI CV and Cover Letter Generator
 
 ## Badges
-[![CI](https://github.com/<your-github-username>/<your-repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-github-username>/<your-repo>/actions/workflows/ci.yml)
-[![Backend PROD](https://github.com/<your-github-username>/<your-repo>/actions/workflows/backend-prod.yml/badge.svg)](https://github.com/<your-github-username>/<your-repo>/actions/workflows/backend-prod.yml)
 [![Node.js](https://img.shields.io/badge/Node.js-20-339933)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6)](https://www.typescriptlang.org/)
