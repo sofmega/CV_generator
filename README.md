@@ -1,11 +1,4 @@
 # CVPro - AI CV and Cover Letter Generator
-
-## Badges
-[![Node.js](https://img.shields.io/badge/Node.js-20-339933)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6)](https://www.typescriptlang.org/)
-
-
 CVPro is a full-stack product that turns a raw resume and a job description into a tailored, recruiter-ready CV or cover letter. It combines a polished React front end with a production-minded Node/Express API, OpenAI-powered generation, Stripe subscriptions, and Supabase for auth, storage, and persistence.
 
 This repository includes both the customer-facing application and the backend services that power AI generation, file parsing, PDF rendering, billing, usage limits, and feedback collection.
@@ -24,23 +17,6 @@ This repository includes both the customer-facing application and the backend se
 - Stripe checkout and billing portal for Starter and Pro plans
 - Usage-based gating: daily and monthly limits by plan
 - Feedback capture and blog content for marketing and retention
-
-## Screenshots
-![CVPro Logo](frontend/public/logo.png)
-
-Add real UI screenshots to make this README pop. Recommended structure:
-- `docs/screenshots/home.png`
-- `docs/screenshots/generator-stepper.png`
-- `docs/screenshots/pdf-preview.png`
-- `docs/screenshots/pricing.png`
-
-Example usage:
-```
-![Home](docs/screenshots/home.png)
-![Generator](docs/screenshots/generator-stepper.png)
-![PDF Preview](docs/screenshots/pdf-preview.png)
-![Pricing](docs/screenshots/pricing.png)
-```
 
 ## Architecture overview
 - Frontend (React + Vite) handles UX, auth, and document flow
@@ -169,17 +145,6 @@ npm test
 ## Deployment notes
 - Backend ships with a `Dockerfile` and a `cloudbuild.yaml` for Cloud Run deployment.
 - Frontend is Vite-based and includes `vercel.json` for Vercel deployment.
-
-## Design decisions (why this architecture)
-- Supabase Auth provides JWTs that the backend verifies per request, enabling a clean separation of frontend auth and backend authorization.
-- Uploaded CVs are stored in Supabase Storage before parsing, keeping file handling consistent and enabling lifecycle cleanup jobs.
-- Usage enforcement is layered: auth → rate limits → plan-based quotas, so abusive traffic and overuse are both handled.
-- Stripe webhooks are made idempotent with a dedicated `stripe_events` table to prevent duplicate billing state updates.
-- PDF rendering is done server-side to ensure consistent output and easy download flows for users.
-
-## CI / quality gates
-- `CI` workflow runs backend tests and frontend build checks on pushes to `develop` and PRs to `main`.
-- `Backend PROD` workflow runs tests, applies Prisma migrations, and deploys to Cloud Run on `main`.
 
 ## Scale-up ideas (future roadmap)
 - Queue-based generation with RabbitMQ for reliable async processing, retries, and backpressure
