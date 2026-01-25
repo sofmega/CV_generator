@@ -116,7 +116,7 @@ export default function ProfileMenu() {
             <p className="text-xs text-gray-500 truncate">{email}</p>
           </div>
 
-          {/* Items */}
+          {/* Itemss */}
           <div className="p-2">
             <button
               onClick={() => go("/account")}
@@ -134,7 +134,7 @@ export default function ProfileMenu() {
               Manage subscription
             </button>
 
-            {/* ✅ Feedback added */}
+            {/* Feedback added */}
             <button
               onClick={() => go("/feedback")}
               className="w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
