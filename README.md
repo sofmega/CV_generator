@@ -5,7 +5,6 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6)](https://www.typescriptlang.org/)
 
-Replace `<your-github-username>/<your-repo>` with your actual GitHub repo path so the workflow badges render.
 
 CVPro is a full-stack product that turns a raw resume and a job description into a tailored, recruiter-ready CV or cover letter. It combines a polished React front end with a production-minded Node/Express API, OpenAI-powered generation, Stripe subscriptions, and Supabase for auth, storage, and persistence.
 
